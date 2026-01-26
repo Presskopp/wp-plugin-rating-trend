@@ -1,11 +1,12 @@
-{
+window.wporgReviewsI18n = {
   "en": {
     "title": "Rating Trend · last 12 months",
     "scale": "Scale: 1–5 stars · monthly average",
     "view": "View rating trend",
     "hosted": "Reviews are hosted on wordpress.org only",
     "loading": "Loading data…",
-    "no_recent_data": "No current reviews"
+    "no_recent_data": "No current reviews",
+    "too_few_reviews": "too few reviews"
   },
   "de": {
     "title": "Bewertungen Trend · letzte 12 Monate",
@@ -13,7 +14,8 @@
     "view": "Bewertungen ansehen",
     "hosted": "Bewertungen sind nur auf wordpress.org verfügbar",
     "loading": "Daten werden geladen …",
-    "no_recent_data": "Keine aktuellen Bewertungen" 
+    "no_recent_data": "Keine aktuellen Bewertungen",
+    "too_few_reviews": "Zu wenig Bewertungen"
   },
   "fr": {
     "title": "Tendance des avis · 12 derniers mois",
@@ -21,6 +23,7 @@
     "view": "Voir la tendance des avis",
     "hosted": "Les avis sont hébergés uniquement sur wordpress.org",
     "loading": "Chargement des données…",
-    "no_recent_data": "Aucun avis récent"
+    "no_recent_data": "Aucun avis récent",
+    "too_few_reviews": "trop peu d’avis"
   }
 }

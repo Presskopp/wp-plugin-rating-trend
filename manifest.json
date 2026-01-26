@@ -9,17 +9,8 @@
         "https://*.wordpress.org/plugins/*"
       ],
       "js": [
+        "i18n.js",
         "content.js"
-      ]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "i18n.json"
-      ],
-      "matches": [
-        "<all_urls>"
       ]
     }
   ],
