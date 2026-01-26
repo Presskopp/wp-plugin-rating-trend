@@ -13,7 +13,7 @@ It visualizes how plugin ratings evolve over time — something WordPress.org it
 - 🚫 No gaps: missing months are interpolated
 - 🕒 Stops early once enough data is collected
 - ⚡ Performance-optimized:
-  - Partial HTML parsing (reviews only)
+- 🎯 Partial HTML parsing (reviews only)
 - 💾 Local cache (6 hours)
 - 🌍 i18n support
 - 🧠 Smart fallback on localized WordPress sites
