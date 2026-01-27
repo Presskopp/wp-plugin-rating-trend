@@ -38,7 +38,6 @@
   // ---------- Time ----------
   const now = new Date();
   const currentYear = now.getFullYear();
-
   const endMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startMonth = new Date(endMonth);
   startMonth.setMonth(startMonth.getMonth() - 11);
@@ -50,6 +49,52 @@
     const [y, m] = k.split("-").map(Number);
     return new Date(y, m - 1, 1);
   };
+
+  // ---------- Domain guard ----------
+  const IS_WORDPRESS_ORG =
+    location.hostname === "wordpress.org" &&
+    location.pathname.startsWith("/plugins/");
+
+  if (!IS_WORDPRESS_ORG) {
+    card.innerHTML = `
+      ${titleHTML}
+      <div style="font-size:16px">
+        ${t.hosted}<br>
+        <a class="external-link"
+          href="https://wordpress.org/support/plugin/${slug}/reviews/"
+          target="_blank" rel="noopener">
+          ${t.view}
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  // ---------- Cache (7 days) ----------
+  const CACHE_KEY = "ratingtrend_" + slug;
+  const CACHE_TTL = 1000 * 60 * 60 * 24 * 7;
+
+  function loadCache() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+      if (cached && Date.now() - cached.time < CACHE_TTL) {
+        return cached.data;
+      }
+    } catch {}
+    return null;
+  }
+
+  function saveCache(data) {
+    try {
+      localStorage.setItem(
+        CACHE_KEY,
+        JSON.stringify({
+          time: Date.now(),
+          data
+        })
+      );
+    } catch {}
+  }
 
   // ---------- Fetch ----------
   async function fetchReviews() {
@@ -150,7 +195,6 @@
     const scaleY = v =>
       height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
 
-    // Y grid
     const yGrid = [1, 2, 3, 4, 5].map(v => {
       const y = scaleY(v);
       return `
@@ -159,7 +203,6 @@
       `;
     }).join("");
 
-    // X labels — ALWAYS 12 MONTHS
     const axisMonths = [];
     let d = new Date(startMonth);
     for (let i = 0; i < 12; i++) {
@@ -181,14 +224,12 @@
       `;
     }).join("");
 
-    // Points (real only)
     const pts = timeline.filter(m => m.real).map(m => ({
       x: scaleX(m.i),
       y: scaleY(m.avg),
       idx: m.i
     }));
 
-    // Segments
     const segments = [];
     let current = null;
 
@@ -217,14 +258,11 @@
     const dots = timeline
       .filter(m => m.real)
       .map(m => `
-        <circle
-          cx="${scaleX(m.i)}"
-          cy="${scaleY(m.avg)}"
-          r="6"
-          fill="#2563eb"
-        />
+        <circle cx="${scaleX(m.i)}"
+                cy="${scaleY(m.avg)}"
+                r="6"
+                fill="#2563eb" />
       `).join("");
-
 
     card.innerHTML = `
       ${titleHTML}
@@ -239,7 +277,13 @@
   }
 
   // ---------- Run ----------
-  const reviews = await fetchReviews();
+  let reviews = loadCache();
+
+  if (!reviews) {
+    reviews = await fetchReviews();
+    if (!reviews.length) return;
+    saveCache(reviews);
+  }
 
   if (reviews.length < 5) {
     card.innerHTML = `${titleHTML}<div>${t.too_few_reviews}</div>`;
