@@ -325,23 +325,6 @@
         pointer-events="none" />
     `).join("");
 
-    /*
-    const dots = timeline
-      .filter(m => m.real)
-      .map(m => `
-        <circle
-          cx="${scaleX(m.i)}"
-          cy="${scaleY(m.avg)}"
-          r="${pointRadius(m.count)}"
-          fill="#2563eb"
-          opacity="0.9">
-          <title>
-            &#8960; ${m.avg.toFixed(2)} | ${m.count} reviews
-          </title>
-        </circle>
-      `).join("");
-      */
-
     card.innerHTML = `
       ${titleHTML}
       <svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto">
