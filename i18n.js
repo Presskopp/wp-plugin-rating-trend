@@ -15,7 +15,7 @@ window.wporgReviewsI18n = {
     "hosted": "Bewertungen sind nur auf wordpress.org verfügbar",
     "loading": "Daten werden geladen …",
     "no_recent_data": "Keine aktuellen Bewertungen",
-    "too_few_reviews": "Zu wenig Bewertungen"
+    "too_few_reviews": "Zu wenige Bewertungen"
   },
   "fr": {
     "title": "Tendance des avis · 12 derniers mois",

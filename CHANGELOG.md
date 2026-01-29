@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.3] – 2026-01-29
+
+### Bugfixing
+- You could get into a "Loading data..." loop. Loops are for roller coasters.
+- sometimes it's the small things - small translation fix (german)
+
+### Improved
+- The dots are grown up! (More reviews make bigger dots)
+
+---
+
 ## [1.0.2] – 2026-01-27
 
 ### Bugfixing

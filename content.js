@@ -1,13 +1,15 @@
 (async function () {
 
+  // Run only on wordpress.org plugin pages
   if (!location.pathname.startsWith("/plugins/")) return;
   const slug = location.pathname.split("/")[2];
   if (!slug) return;
 
+  // Anchor element: rating stars block on plugin page
   const ratingsBlock = document.querySelector(".wp-block-wporg-ratings-stars");
   if (!ratingsBlock) return;
 
-  // ---------- i18n ----------
+  // ---------------- i18n ----------------
   const i18n = window.wporgReviewsI18n || {};
   const browserLang =
     (navigator.language || navigator.userLanguage || "en")
@@ -15,13 +17,15 @@
       .split("-")[0];
   const t = i18n[browserLang] || i18n.en;
 
+  // Section title
   const titleHTML = `
     <div style="font-weight:600;font-size:20px;margin-bottom:12px">
       📈 ${t.title}
     </div>
   `;
 
-  // ---------- Card ----------
+  // ---------------- Card container ----------------
+  // Visual wrapper for chart and messages
   const card = document.createElement("div");
   card.style.cssText = `
     margin:16px 0 0;
@@ -35,22 +39,26 @@
   ratingsBlock.parentNode.insertBefore(card, ratingsBlock.nextSibling);
   card.innerHTML = `${titleHTML}<div style="opacity:.6">${t.loading}</div>`;
 
-  // ---------- Time ----------
+  // ---------------- Time window ----------------
+  // Rolling 12-month window ending at the current month
   const now = new Date();
   const currentYear = now.getFullYear();
   const endMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startMonth = new Date(endMonth);
   startMonth.setMonth(startMonth.getMonth() - 11);
 
+  // Convert Date → YYYY-MM key
   const monthKey = d =>
     `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
+  // Convert YYYY-MM → Date (first day of month)
   const monthKeyToDate = k => {
     const [y, m] = k.split("-").map(Number);
     return new Date(y, m - 1, 1);
   };
 
-  // ---------- Domain guard ----------
+  // ---------------- Domain guard ----------------
+  // On localised wordpress.org domains, show link instead of chart
   const IS_WORDPRESS_ORG =
     location.hostname === "wordpress.org" &&
     location.pathname.startsWith("/plugins/");
@@ -70,9 +78,10 @@
     return;
   }
 
-  // ---------- Cache (7 days) ----------
+  // ---------------- Cache ----------------
+  // LocalStorage cache to avoid repeated scraping
   const CACHE_KEY = "ratingtrend_" + slug;
-  const CACHE_TTL = 1000 * 60 * 60 * 24 * 7;
+  const CACHE_TTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
   function loadCache() {
     try {
@@ -96,11 +105,13 @@
     } catch {}
   }
 
-  // ---------- Fetch ----------
+  // ---------------- Fetch reviews ----------------
+  // Scrapes paginated support forum review listings
   async function fetchReviews() {
     const reviews = [];
     let page = 1;
 
+    // English month names used in wp.org date titles
     const monthsMap = {
       January: "01", February: "02", March: "03", April: "04",
       May: "05", June: "06", July: "07", August: "08",
@@ -117,13 +128,17 @@
       const doc = new DOMParser().parseFromString(html, "text/html");
       const topics = [...doc.querySelectorAll('ul[id^="bbp-topic-"]')];
 
+      // Used to detect when we've paged past the relevant date range
       let foundRelevant = false;
 
       for (const topic of topics) {
         const stars = topic.querySelectorAll(".dashicons-star-filled").length;
-        const title = topic.querySelector(".bbp-topic-freshness a")?.getAttribute("title");
+        const title =
+          topic.querySelector(".bbp-topic-freshness a")
+            ?.getAttribute("title");
         if (!stars || !title) continue;
 
+        // Extract "Month Day, Year" from title attribute
         const m = title.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
         if (!m) continue;
 
@@ -136,6 +151,7 @@
         }
       }
 
+      // Stop once we no longer encounter relevant months
       if (!foundRelevant) break;
       page++;
     }
@@ -143,7 +159,8 @@
     return reviews;
   }
 
-  // ---------- Timeline (data only) ----------
+  // ---------------- Timeline aggregation ----------------
+  // Groups reviews by month and computes averages
   function buildTimeline(reviews) {
     const byMonth = {};
     reviews.forEach(r => {
@@ -158,8 +175,14 @@
     for (let i = 0; i < 12; i++) {
       const key = monthKey(d);
       if (byMonth[key]) {
-        const avg = byMonth[key].reduce((a, b) => a + b, 0) / byMonth[key].length;
-        timeline.push({ i, avg, real: true });
+        const arr = byMonth[key];
+        const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+        timeline.push({
+          i,                 // month index (0–11)
+          avg,               // average rating
+          count: arr.length, // number of reviews
+          real: true
+        });
         if (firstReal === null) firstReal = i;
       } else {
         timeline.push({ i, avg: null, real: false });
@@ -167,11 +190,13 @@
       d.setMonth(d.getMonth() + 1);
     }
 
+    // Trim leading empty months
     if (firstReal === null) return [];
     return timeline.slice(firstReal);
   }
 
-  // ---------- Bezier ----------
+  // ---------------- Bezier path helper ----------------
+  // Creates smooth curve segments between points
   function safeBezier(points) {
     let d = `M ${points[0].x},${points[0].y}`;
     for (let i = 0; i < points.length - 1; i++) {
@@ -179,12 +204,23 @@
       const p2 = points[i + 1];
       const dx = (p2.x - p1.x) / 3;
       const dy = (p2.y - p1.y) / 12;
-      d += ` C ${p1.x + dx},${p1.y + dy} ${p2.x - dx},${p2.y - dy} ${p2.x},${p2.y}`;
+      d += ` C ${p1.x + dx},${p1.y + dy}
+                 ${p2.x - dx},${p2.y - dy}
+                 ${p2.x},${p2.y}`;
     }
     return d;
   }
 
-  // ---------- Render ----------
+  // ---------------- Point size scaling ----------------
+  // Visual weight reflects number of reviews in that month
+  function pointRadius(count) {
+    if (count <= 3)  return 6;
+    if (count <= 10) return 8;
+    if (count <= 20) return 10;
+    return 12;
+  }
+
+  // ---------------- Render chart ----------------
   function render(timeline) {
     const width = 760, height = 340;
     const padL = 50, padR = 40, padT = 20, padB = 90;
@@ -195,14 +231,16 @@
     const scaleY = v =>
       height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
 
-    const yGrid = [1, 2, 3, 4, 5].map(v => {
+    // Horizontal grid lines + labels
+    const yGrid = [1,2,3,4,5].map(v => {
       const y = scaleY(v);
       return `
-        <line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#e5e7eb"/>
-        <text x="${padL - 10}" y="${y + 8}" font-size="28" text-anchor="end">${v}</text>
+        <line x1="${padL}" y1="${y}" x2="${width-padR}" y2="${y}" stroke="#e5e7eb"/>
+        <text x="${padL-10}" y="${y+8}" font-size="28" text-anchor="end">${v}</text>
       `;
     }).join("");
 
+    // X-axis month labels
     const axisMonths = [];
     let d = new Date(startMonth);
     for (let i = 0; i < 12; i++) {
@@ -213,29 +251,32 @@
     const xLabels = axisMonths.map((m, idx) => {
       const month = m.date.getMonth() + 1;
       const year = m.date.getFullYear();
-      const showYear = idx === 0 || (month === 1 && year === currentYear);
+      const showYear = idx === 0 || month === 1;
       const label = showYear ? `${year}-${month}` : `${month}`;
 
       return `
-        <text x="${scaleX(m.i)}" y="${height - 40}"
-              font-size="26" text-anchor="middle">
+        <text x="${scaleX(m.i)}"
+              y="${height - 40}"
+              font-size="26"
+              text-anchor="middle">
           ${label}
         </text>
       `;
     }).join("");
 
+    // Data points
     const pts = timeline.filter(m => m.real).map(m => ({
       x: scaleX(m.i),
       y: scaleY(m.avg),
       idx: m.i
     }));
 
+    // Split into solid vs dashed segments
     const segments = [];
     let current = null;
 
     for (let i = 0; i < pts.length - 1; i++) {
-      const a = pts[i];
-      const b = pts[i + 1];
+      const a = pts[i], b = pts[i + 1];
       const solid = b.idx === a.idx + 1;
 
       if (!current || current.solid !== solid) {
@@ -255,13 +296,15 @@
             ${seg.solid ? "" : 'stroke-dasharray="6 6" opacity="0.7"'} />
     `).join("");
 
+    // Render dots with size based on review count
     const dots = timeline
       .filter(m => m.real)
       .map(m => `
         <circle cx="${scaleX(m.i)}"
                 cy="${scaleY(m.avg)}"
-                r="6"
-                fill="#2563eb" />
+                r="${pointRadius(m.count)}"
+                fill="#2563eb"
+                opacity="0.9" />
       `).join("");
 
     card.innerHTML = `
@@ -272,16 +315,15 @@
         ${dots}
         ${xLabels}
       </svg>
-      <div style="margin-top:12px;font-size:16px">${t.scale}</div>
+      <div style="font-size:16px">${t.scale}</div>
     `;
   }
 
-  // ---------- Run ----------
+  // ---------------- Run ----------------
   let reviews = loadCache();
 
   if (!reviews) {
     reviews = await fetchReviews();
-    if (!reviews.length) return;
     saveCache(reviews);
   }
 
