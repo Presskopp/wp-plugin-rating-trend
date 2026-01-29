@@ -227,7 +227,10 @@
     const chartW = width - padL - padR;
     const chartH = height - padT - padB;
 
-    const scaleX = i => padL + (i / 11) * chartW;
+    //const scaleX = i => padL + (i / 11) * chartW;
+    const INNER_X_OFFSET = 16;
+    const scaleX = i =>
+      padL + INNER_X_OFFSET + (i / 11) * (chartW - INNER_X_OFFSET);
     const scaleY = v =>
       height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
 
@@ -299,13 +302,45 @@
     // Render dots with size based on review count
     const dots = timeline
       .filter(m => m.real)
+    .map(m => `
+      <!-- Hit area -->
+      <circle
+        cx="${scaleX(m.i)}"
+        cy="${scaleY(m.avg)}"
+        r="${Math.max(pointRadius(m.count), 12)}"
+        fill="transparent"
+        pointer-events="all">
+        <title>
+          &#8960; ${m.avg.toFixed(2)} | ${m.count} reviews
+        </title>
+      </circle>
+
+      <!-- Visible dot -->
+      <circle
+        cx="${scaleX(m.i)}"
+        cy="${scaleY(m.avg)}"
+        r="${pointRadius(m.count)}"
+        fill="#2563eb"
+        opacity="0.9"
+        pointer-events="none" />
+    `).join("");
+
+    /*
+    const dots = timeline
+      .filter(m => m.real)
       .map(m => `
-        <circle cx="${scaleX(m.i)}"
-                cy="${scaleY(m.avg)}"
-                r="${pointRadius(m.count)}"
-                fill="#2563eb"
-                opacity="0.9" />
+        <circle
+          cx="${scaleX(m.i)}"
+          cy="${scaleY(m.avg)}"
+          r="${pointRadius(m.count)}"
+          fill="#2563eb"
+          opacity="0.9">
+          <title>
+            &#8960; ${m.avg.toFixed(2)} | ${m.count} reviews
+          </title>
+        </circle>
       `).join("");
+      */
 
     card.innerHTML = `
       ${titleHTML}
