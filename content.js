@@ -1,11 +1,10 @@
 (async function () {
 
-  // Run only on wordpress.org plugin pages
+  // ---------------- Guards ----------------
   if (!location.pathname.startsWith("/plugins/")) return;
   const slug = location.pathname.split("/")[2];
   if (!slug) return;
 
-  // Anchor element: rating stars block on plugin page
   const ratingsBlock = document.querySelector(".wp-block-wporg-ratings-stars");
   if (!ratingsBlock) return;
 
@@ -17,15 +16,66 @@
       .split("-")[0];
   const t = i18n[browserLang] || i18n.en;
 
-  // Section title
+  // ---------------- CSS (once) ----------------
+  if (!document.getElementById("rt-style")) {
+    const style = document.createElement("style");
+    style.id = "rt-style";
+    style.textContent = `
+      .rt-info {
+        position: relative;
+        margin-left: 6px;
+        color: #6b7280;
+        font-size: 14px;
+        cursor: help;
+      }
+
+      .rt-info:hover .rt-popover,
+      .rt-info:focus .rt-popover {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .rt-popover {
+        position: absolute;
+        top: 22px;
+        right: 0;
+        width: 240px;
+        padding: 10px 12px;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #111827;
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-4px);
+        transition: all .15s ease;
+        z-index: 20;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // ---------------- Title ----------------
   const titleHTML = `
     <div style="font-weight:600;font-size:20px;margin-bottom:12px">
       📈 ${t.title}
+	  <span class="rt-info" tabindex="0" aria-label="${t.legend}">
+        ℹ️
+        <span class="rt-popover">
+			● ${t.tooltip_dots}<br>
+			— &nbsp;${t.line} = ${t.tooltip_reviews}<br>
+			– – ${t.line} = ${t.tooltip_no_reviews}<br>
+			${t.tooltip_y}
+		</span>
+      </span>
     </div>
   `;
 
-  // ---------------- Card container ----------------
-  // Visual wrapper for chart and messages
+  // ---------------- Card ----------------
   const card = document.createElement("div");
   card.style.cssText = `
     margin:16px 0 0;
@@ -42,7 +92,6 @@
   // ---------------- Time window ----------------
   // Rolling 12-month window ending at the current month
   const now = new Date();
-  const currentYear = now.getFullYear();
   const endMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startMonth = new Date(endMonth);
   startMonth.setMonth(startMonth.getMonth() - 11);
@@ -79,7 +128,6 @@
   }
 
   // ---------------- Cache ----------------
-  // LocalStorage cache to avoid repeated scraping
   const CACHE_KEY = "ratingtrend_" + slug;
   const CACHE_TTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
@@ -95,13 +143,10 @@
 
   function saveCache(data) {
     try {
-      localStorage.setItem(
-        CACHE_KEY,
-        JSON.stringify({
-          time: Date.now(),
-          data
-        })
-      );
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        time: Date.now(),
+        data
+      }));
     } catch {}
   }
 
@@ -111,7 +156,7 @@
     const reviews = [];
     let page = 1;
 
-    // English month names used in wp.org date titles
+	// English month names used in wp.org date titles
     const monthsMap = {
       January: "01", February: "02", March: "03", April: "04",
       May: "05", June: "06", July: "07", August: "08",
@@ -128,17 +173,16 @@
       const doc = new DOMParser().parseFromString(html, "text/html");
       const topics = [...doc.querySelectorAll('ul[id^="bbp-topic-"]')];
 
-      // Used to detect when we've paged past the relevant date range
+	  // Used to detect when we've paged past the relevant date range
       let foundRelevant = false;
 
       for (const topic of topics) {
         const stars = topic.querySelectorAll(".dashicons-star-filled").length;
         const title =
-          topic.querySelector(".bbp-topic-freshness a")
-            ?.getAttribute("title");
+          topic.querySelector(".bbp-topic-freshness a")?.getAttribute("title");
         if (!stars || !title) continue;
 
-        // Extract "Month Day, Year" from title attribute
+		// Extract "Month Day, Year" from title attribute
         const m = title.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
         if (!m) continue;
 
@@ -151,7 +195,7 @@
         }
       }
 
-      // Stop once we no longer encounter relevant months
+	  // Stop once we no longer encounter relevant months
       if (!foundRelevant) break;
       page++;
     }
@@ -164,8 +208,7 @@
   function buildTimeline(reviews) {
     const byMonth = {};
     reviews.forEach(r => {
-      if (!byMonth[r.month]) byMonth[r.month] = [];
-      byMonth[r.month].push(r.stars);
+      (byMonth[r.month] ||= []).push(r.stars);
     });
 
     const timeline = [];
@@ -174,25 +217,25 @@
 
     for (let i = 0; i < 12; i++) {
       const key = monthKey(d);
+
       if (byMonth[key]) {
         const arr = byMonth[key];
-        const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
         timeline.push({
-          i,                 // month index (0–11)
-          avg,               // average rating
-          count: arr.length, // number of reviews
+          i, 												// month index (0–11)
+          avg: arr.reduce((a, b) => a + b, 0) / arr.length, // average rating
+          count: arr.length,								// review count
           real: true
         });
         if (firstReal === null) firstReal = i;
       } else {
         timeline.push({ i, avg: null, real: false });
       }
+
       d.setMonth(d.getMonth() + 1);
     }
 
-    // Trim leading empty months
-    if (firstReal === null) return [];
-    return timeline.slice(firstReal);
+	// Trim leading empty months
+    return firstReal === null ? [] : timeline.slice(firstReal);
   }
 
   // ---------------- Bezier path helper ----------------
@@ -214,24 +257,27 @@
   // ---------------- Point size scaling ----------------
   // Visual weight reflects number of reviews in that month
   function pointRadius(count) {
-    if (count <= 3)  return 6;
+    if (count <= 3) return 6;
     if (count <= 10) return 8;
     if (count <= 20) return 10;
     return 12;
   }
 
-  // ---------------- Render chart ----------------
+  // ---------------- Render ----------------
   function render(timeline) {
     const width = 760, height = 340;
     const padL = 50, padR = 40, padT = 20, padB = 90;
     const chartW = width - padL - padR;
     const chartH = height - padT - padB;
 
-    const scaleX = i => padL + (i / 11) * chartW;
+    const INNER_X_OFFSET = 16;
+    const scaleX = i =>
+      padL + INNER_X_OFFSET + (i / 11) * (chartW - INNER_X_OFFSET);
+
     const scaleY = v =>
       height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
 
-    // Horizontal grid lines + labels
+	// Horizontal grid lines + labels
     const yGrid = [1,2,3,4,5].map(v => {
       const y = scaleY(v);
       return `
@@ -240,7 +286,7 @@
       `;
     }).join("");
 
-    // X-axis month labels
+	// X-axis month labels
     const axisMonths = [];
     let d = new Date(startMonth);
     for (let i = 0; i < 12; i++) {
@@ -264,14 +310,14 @@
       `;
     }).join("");
 
-    // Data points
+	// Data points
     const pts = timeline.filter(m => m.real).map(m => ({
       x: scaleX(m.i),
       y: scaleY(m.avg),
       idx: m.i
     }));
 
-    // Split into solid vs dashed segments
+	// Split into solid vs dashed segments
     const segments = [];
     let current = null;
 
@@ -296,16 +342,24 @@
             ${seg.solid ? "" : 'stroke-dasharray="6 6" opacity="0.7"'} />
     `).join("");
 
-    // Render dots with size based on review count
-    const dots = timeline
-      .filter(m => m.real)
-      .map(m => `
-        <circle cx="${scaleX(m.i)}"
-                cy="${scaleY(m.avg)}"
-                r="${pointRadius(m.count)}"
-                fill="#2563eb"
-                opacity="0.9" />
-      `).join("");
+	// Render dots with size based on review count
+    const dots = timeline.filter(m => m.real).map(m => `
+      <circle
+        cx="${scaleX(m.i)}"
+        cy="${scaleY(m.avg)}"
+        r="${Math.max(pointRadius(m.count), 12)}"
+        fill="transparent"
+        pointer-events="all">
+		<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${t.tooltip_reviews}</title>
+      </circle>
+      <circle
+        cx="${scaleX(m.i)}"
+        cy="${scaleY(m.avg)}"
+        r="${pointRadius(m.count)}"
+        fill="#2563eb"
+        opacity="0.9"
+        pointer-events="none" />
+    `).join("");
 
     card.innerHTML = `
       ${titleHTML}
@@ -332,7 +386,6 @@
     return;
   }
 
-  const timeline = buildTimeline(reviews);
-  render(timeline);
+  render(buildTimeline(reviews));
 
 })();
