@@ -257,7 +257,7 @@
   // ---------------- Point size scaling ----------------
   // Visual weight reflects number of reviews in that month
   function pointRadius(count) {
-    if (count <= 3) return 6;
+    if (count <= 3)  return 6;
     if (count <= 10) return 8;
     if (count <= 20) return 10;
     return 12;
@@ -269,11 +269,9 @@
     const padL = 50, padR = 40, padT = 20, padB = 90;
     const chartW = width - padL - padR;
     const chartH = height - padT - padB;
-
     const INNER_X_OFFSET = 16;
     const scaleX = i =>
       padL + INNER_X_OFFSET + (i / 11) * (chartW - INNER_X_OFFSET);
-
     const scaleY = v =>
       height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
 
