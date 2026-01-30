@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4] – 2026-01-29
+
+### Improved
+- You don't understand what the chart is all about? Tooltips are here to help. Furthermore, there's a legend, too.
+
+---
+
 ## [1.0.3] – 2026-01-29
 
 ### Bugfixing
