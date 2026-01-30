@@ -1,6 +1,11 @@
 # Changelog
 
-## [1.0.4] – 2026-01-29
+## [1.0.5] – 2026-01-30
+- Refinements, small fixes, a bit of Salt’n’Pepa.
+
+---
+
+## [1.0.4] – 2026-01-30
 
 ### Improved
 - You don't understand what the chart is all about? Tooltips are here to help. Furthermore, there's a legend, too.

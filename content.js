@@ -1,389 +1,419 @@
 (async function () {
 
-  // ---------------- Guards ----------------
-  if (!location.pathname.startsWith("/plugins/")) return;
-  const slug = location.pathname.split("/")[2];
-  if (!slug) return;
+	// ---------------- Guards ----------------
+	if (!location.pathname.startsWith("/plugins/")) return;
+	const slug = location.pathname.split("/")[2];
+	if (!slug) return;
 
-  const ratingsBlock = document.querySelector(".wp-block-wporg-ratings-stars");
-  if (!ratingsBlock) return;
+	const ratingsBlock = document.querySelector(".wp-block-wporg-ratings-stars");
+	if (!ratingsBlock) return;
 
-  // ---------------- i18n ----------------
-  const i18n = window.wporgReviewsI18n || {};
-  const browserLang =
-    (navigator.language || navigator.userLanguage || "en")
-      .toLowerCase()
-      .split("-")[0];
-  const t = i18n[browserLang] || i18n.en;
+	// ---------------- i18n ----------------
+	const i18n = window.wporgReviewsI18n || {};
+	const browserLang =
+		(navigator.language || navigator.userLanguage || "en")
+			.toLowerCase()
+			.split("-")[0];
+	const t = i18n[browserLang] || i18n.en;
 
-  // ---------------- CSS (once) ----------------
-  if (!document.getElementById("rt-style")) {
-    const style = document.createElement("style");
-    style.id = "rt-style";
-    style.textContent = `
-      .rt-info {
-        position: relative;
-        margin-left: 6px;
-        color: #6b7280;
-        font-size: 14px;
-        cursor: help;
-      }
+	// ---------------- CSS (once) ----------------
+	if (!document.getElementById("rt-style")) {
+		const style = document.createElement("style");
+		style.id = "rt-style";
+		style.textContent = `
+			.rt-title {
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
+				margin-bottom: 12px;
+				font-weight: 600;
+				font-size: 20px;
+			}
 
-      .rt-info:hover .rt-popover,
-      .rt-info:focus .rt-popover {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(0);
-      }
+			.rt-title-text {
+				line-height: 1.3;
+			}
 
-      .rt-popover {
-        position: absolute;
-        top: 22px;
-        right: 0;
-        width: 240px;
-        padding: 10px 12px;
-        font-size: 13px;
-        line-height: 1.4;
-        color: #111827;
-        background: #fff;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        box-shadow: 0 10px 25px rgba(0,0,0,.08);
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(-4px);
-        transition: all .15s ease;
-        z-index: 20;
-      }
-    `;
-    document.head.appendChild(style);
-  }
+			.rt-subtitle {
+				font-weight: 400;
+				opacity: .7;
+				font-size: 15px;
+			}
 
-  // ---------------- Title ----------------
-  const titleHTML = `
-    <div style="font-weight:600;font-size:20px;margin-bottom:12px">
-      📈 ${t.title}
-	  <span class="rt-info" tabindex="0" aria-label="${t.legend}">
-        ℹ️
-        <span class="rt-popover">
-			● ${t.tooltip_dots}<br>
-			— &nbsp;${t.line} = ${t.tooltip_reviews}<br>
-			– – ${t.line} = ${t.tooltip_no_reviews}<br>
-			${t.tooltip_y}
-		</span>
-      </span>
-    </div>
-  `;
+			.rt-info {
+				position: relative;
+				margin-left: 12px;
+				color: #6b7280;
+				font-size: 14px;
+				cursor: help;
+				flex-shrink: 0;
+			}
 
-  // ---------------- Card ----------------
-  const card = document.createElement("div");
-  card.style.cssText = `
-    margin:16px 0 0;
-    padding:18px;
-    border:1px solid #e5e7eb;
-    border-radius:14px;
-    background:#fff;
-    font-family:system-ui;
-    max-width:760px;
-  `;
-  ratingsBlock.parentNode.insertBefore(card, ratingsBlock.nextSibling);
-  card.innerHTML = `${titleHTML}<div style="opacity:.6">${t.loading}</div>`;
+			.rt-info:hover .rt-popover,
+			.rt-info:focus .rt-popover {
+				opacity: 1;
+				pointer-events: auto;
+				transform: translateY(0);
+			}
 
-  // ---------------- Time window ----------------
-  // Rolling 12-month window ending at the current month
-  const now = new Date();
-  const endMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const startMonth = new Date(endMonth);
-  startMonth.setMonth(startMonth.getMonth() - 11);
+			.rt-popover {
+				position: absolute;
+				top: 22px;
+				right: 0;
+				width: 240px;
+				padding: 10px 12px;
+				font-size: 13px;
+				line-height: 1.4;
+				color: #111827;
+				background: #fff;
+				border: 1px solid #e5e7eb;
+				border-radius: 8px;
+				box-shadow: 0 10px 25px rgba(0,0,0,.08);
+				opacity: 0;
+				pointer-events: none;
+				transform: translateY(-4px);
+				transition: all .15s ease;
+				z-index: 20;
+			}
+		`;
+		document.head.appendChild(style);
+	}
 
-  // Convert Date → YYYY-MM key
-  const monthKey = d =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+	// ---------------- Title ----------------
+	const titleHTML = `
+		<div class="rt-title">
+			<div class="rt-title-text">
+				📈 ${t.title}<br>
+				<span class="rt-subtitle">· ${t.subtitle}</span>
+			</div>
 
-  // Convert YYYY-MM → Date (first day of month)
-  const monthKeyToDate = k => {
-    const [y, m] = k.split("-").map(Number);
-    return new Date(y, m - 1, 1);
-  };
+			<span class="rt-info" tabindex="0" aria-label="${t.legend}">
+				ℹ️
+				<span class="rt-popover">
+					● ${t.tooltip_dots}<br>
+					— &nbsp;${t.line} = ${t.tooltip_rating}<br>
+					– – ${t.line} = ${t.tooltip_no_data}<br>
+					${t.tooltip_y}
+				</span>
+			</span>
+		</div>
+	`;
 
-  // ---------------- Domain guard ----------------
-  // On localised wordpress.org domains, show link instead of chart
-  const IS_WORDPRESS_ORG =
-    location.hostname === "wordpress.org" &&
-    location.pathname.startsWith("/plugins/");
+	// ---------------- Card ----------------
+	const card = document.createElement("div");
+	card.style.cssText = `
+		margin:16px 0 0;
+		padding:18px;
+		border:1px solid #e5e7eb;
+		border-radius:14px;
+		background:#fff;
+		font-family:system-ui;
+		max-width:760px;
+	`;
+	ratingsBlock.parentNode.insertBefore(card, ratingsBlock.nextSibling);
+	card.innerHTML = `${titleHTML}<div style="opacity:.6">${t.loading}</div>`;
 
-  if (!IS_WORDPRESS_ORG) {
-    card.innerHTML = `
-      ${titleHTML}
-      <div style="font-size:16px">
-        ${t.hosted}<br>
-        <a class="external-link"
-          href="https://wordpress.org/support/plugin/${slug}/reviews/"
-          target="_blank" rel="noopener">
-          ${t.view}
-        </a>
-      </div>
-    `;
-    return;
-  }
+	// ---------------- Time window ----------------
+	// Rolling 12-month window ending at the current month
+	const now = new Date();
+	const endMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+	const startMonth = new Date(endMonth);
+	startMonth.setMonth(startMonth.getMonth() - 11);
 
-  // ---------------- Cache ----------------
-  const CACHE_KEY = "ratingtrend_" + slug;
-  const CACHE_TTL = 1000 * 60 * 60 * 24 * 7; // 7 days
+	// Convert Date → YYYY-MM key
+	const monthKey = d =>
+		`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
-  function loadCache() {
-    try {
-      const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
-      if (cached && Date.now() - cached.time < CACHE_TTL) {
-        return cached.data;
-      }
-    } catch {}
-    return null;
-  }
+	// Convert YYYY-MM → Date (first day of month)
+	const monthKeyToDate = k => {
+		const [y, m] = k.split("-").map(Number);
+		return new Date(y, m - 1, 1);
+	};
 
-  function saveCache(data) {
-    try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        time: Date.now(),
-        data
-      }));
-    } catch {}
-  }
+	// ---------------- Domain guard ----------------
+	// On localised wordpress.org domains, show link instead of chart
+	const IS_WORDPRESS_ORG =
+		location.hostname === "wordpress.org" &&
+		location.pathname.startsWith("/plugins/");
 
-  // ---------------- Fetch reviews ----------------
-  // Scrapes paginated support forum review listings
-  async function fetchReviews() {
-    const reviews = [];
-    let page = 1;
+	if (!IS_WORDPRESS_ORG) {
+		card.innerHTML = `
+			${titleHTML}
+			<div style="font-size:16px">
+				${t.hosted}<br>
+				<a class="external-link"
+					href="https://wordpress.org/support/plugin/${slug}/reviews/"
+					target="_blank" rel="noopener">
+					${t.view}
+				</a>
+			</div>
+		`;
+		return;
+	}
 
-	// English month names used in wp.org date titles
-    const monthsMap = {
-      January: "01", February: "02", March: "03", April: "04",
-      May: "05", June: "06", July: "07", August: "08",
-      September: "09", October: "10", November: "11", December: "12"
-    };
+	// ---------------- Cache ----------------
+	// LocalStorage cache to avoid repeated scraping
+	const CACHE_KEY = "ratingtrend_" + slug;
+	const CACHE_TTL = 1000 * 60 * 60 * 24 * 7; // 7 days
 
-    while (page <= 10) {
-      const url = page === 1
-        ? `https://wordpress.org/support/plugin/${slug}/reviews/`
-        : `https://wordpress.org/support/plugin/${slug}/reviews/page/${page}/`;
+	function loadCache() {
+		try {
+			const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+			if (cached && Date.now() - cached.time < CACHE_TTL) {
+				return cached.data;
+			}
+		} catch {}
+		return null;
+	}
 
-      const res = await fetch(url);
-      const html = await res.text();
-      const doc = new DOMParser().parseFromString(html, "text/html");
-      const topics = [...doc.querySelectorAll('ul[id^="bbp-topic-"]')];
+	function saveCache(data) {
+		try {
+			localStorage.setItem(
+				CACHE_KEY,
+				JSON.stringify({
+					time: Date.now(),
+					data
+				})
+			);
+		} catch {}
+	}
 
-	  // Used to detect when we've paged past the relevant date range
-      let foundRelevant = false;
+	// ---------------- Fetch reviews ----------------
+	// Scrapes paginated support forum review listings
+	async function fetchReviews() {
+		const reviews = [];
+		let page = 1;
 
-      for (const topic of topics) {
-        const stars = topic.querySelectorAll(".dashicons-star-filled").length;
-        const title =
-          topic.querySelector(".bbp-topic-freshness a")?.getAttribute("title");
-        if (!stars || !title) continue;
+		// English month names used in wp.org date titles
+		const monthsMap = {
+			January: "01", February: "02", March: "03", April: "04",
+			May: "05", June: "06", July: "07", August: "08",
+			September: "09", October: "10", November: "11", December: "12"
+		};
 
-		// Extract "Month Day, Year" from title attribute
-        const m = title.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
-        if (!m) continue;
+		while (page <= 10) {
+			const url = page === 1
+				? `https://wordpress.org/support/plugin/${slug}/reviews/`
+				: `https://wordpress.org/support/plugin/${slug}/reviews/page/${page}/`;
 
-        const key = `${m[3]}-${monthsMap[m[1]]}`;
-        const date = monthKeyToDate(key);
+			const res = await fetch(url);
+			const html = await res.text();
+			const doc = new DOMParser().parseFromString(html, "text/html");
+			const topics = [...doc.querySelectorAll('ul[id^="bbp-topic-"]')];
 
-        if (date >= startMonth && date <= endMonth) {
-          reviews.push({ stars, month: key });
-          foundRelevant = true;
-        }
-      }
+			// Used to detect when we've paged past the relevant date range
+			let foundRelevant = false;
 
-	  // Stop once we no longer encounter relevant months
-      if (!foundRelevant) break;
-      page++;
-    }
+			for (const topic of topics) {
+				const stars = topic.querySelectorAll(".dashicons-star-filled").length;
+				const title =
+					topic.querySelector(".bbp-topic-freshness a")?.getAttribute("title");
+				if (!stars || !title) continue;
 
-    return reviews;
-  }
+				// Extract "Month Day, Year" from title attribute
+				const m = title.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
+				if (!m) continue;
 
-  // ---------------- Timeline aggregation ----------------
-  // Groups reviews by month and computes averages
-  function buildTimeline(reviews) {
-    const byMonth = {};
-    reviews.forEach(r => {
-      (byMonth[r.month] ||= []).push(r.stars);
-    });
+				const key = `${m[3]}-${monthsMap[m[1]]}`;
+				const date = monthKeyToDate(key);
 
-    const timeline = [];
-    let d = new Date(startMonth);
-    let firstReal = null;
+				if (date >= startMonth && date <= endMonth) {
+					reviews.push({ stars, month: key });
+					foundRelevant = true;
+				}
+			}
 
-    for (let i = 0; i < 12; i++) {
-      const key = monthKey(d);
+			// Stop once we no longer encounter relevant months
+			if (!foundRelevant) break;
+			page++;
+		}
 
-      if (byMonth[key]) {
-        const arr = byMonth[key];
-        timeline.push({
-          i, 												// month index (0–11)
-          avg: arr.reduce((a, b) => a + b, 0) / arr.length, // average rating
-          count: arr.length,								// review count
-          real: true
-        });
-        if (firstReal === null) firstReal = i;
-      } else {
-        timeline.push({ i, avg: null, real: false });
-      }
+		return reviews;
+	}
 
-      d.setMonth(d.getMonth() + 1);
-    }
+	// ---------------- Timeline aggregation ----------------
+	// Groups reviews by month and computes averages
+	function buildTimeline(reviews) {
+		const byMonth = {};
+		reviews.forEach(r => {
+			(byMonth[r.month] ||= []).push(r.stars);
+		});
 
-	// Trim leading empty months
-    return firstReal === null ? [] : timeline.slice(firstReal);
-  }
+		const timeline = [];
+		let d = new Date(startMonth);
+		let firstReal = null;
 
-  // ---------------- Bezier path helper ----------------
-  // Creates smooth curve segments between points
-  function safeBezier(points) {
-    let d = `M ${points[0].x},${points[0].y}`;
-    for (let i = 0; i < points.length - 1; i++) {
-      const p1 = points[i];
-      const p2 = points[i + 1];
-      const dx = (p2.x - p1.x) / 3;
-      const dy = (p2.y - p1.y) / 12;
-      d += ` C ${p1.x + dx},${p1.y + dy}
-                 ${p2.x - dx},${p2.y - dy}
-                 ${p2.x},${p2.y}`;
-    }
-    return d;
-  }
+		for (let i = 0; i < 12; i++) {
+			const key = monthKey(d);
 
-  // ---------------- Point size scaling ----------------
-  // Visual weight reflects number of reviews in that month
-  function pointRadius(count) {
-    if (count <= 3)  return 6;
-    if (count <= 10) return 8;
-    if (count <= 20) return 10;
-    return 12;
-  }
+			if (byMonth[key]) {
+				const arr = byMonth[key];
+				timeline.push({
+					i,													// month index (0–11)
+					avg: arr.reduce((a, b) => a + b, 0) / arr.length,	// average rating
+					count: arr.length,									// review count
+					real: true
+				});
+				if (firstReal === null) firstReal = i;
+			} else {
+				timeline.push({ i, avg: null, real: false });
+			}
 
-  // ---------------- Render ----------------
-  function render(timeline) {
-    const width = 760, height = 340;
-    const padL = 50, padR = 40, padT = 20, padB = 90;
-    const chartW = width - padL - padR;
-    const chartH = height - padT - padB;
-    const INNER_X_OFFSET = 16;
-    const scaleX = i =>
-      padL + INNER_X_OFFSET + (i / 11) * (chartW - INNER_X_OFFSET);
-    const scaleY = v =>
-      height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
+			d.setMonth(d.getMonth() + 1);
+		}
 
-	// Horizontal grid lines + labels
-    const yGrid = [1,2,3,4,5].map(v => {
-      const y = scaleY(v);
-      return `
-        <line x1="${padL}" y1="${y}" x2="${width-padR}" y2="${y}" stroke="#e5e7eb"/>
-        <text x="${padL-10}" y="${y+8}" font-size="28" text-anchor="end">${v}</text>
-      `;
-    }).join("");
+		// Trim leading empty months
+		return firstReal === null ? [] : timeline.slice(firstReal);
+	}
 
-	// X-axis month labels
-    const axisMonths = [];
-    let d = new Date(startMonth);
-    for (let i = 0; i < 12; i++) {
-      axisMonths.push({ i, date: new Date(d) });
-      d.setMonth(d.getMonth() + 1);
-    }
+	// ---------------- Bezier path helper ----------------
+	// Creates smooth curve segments between points
+	function safeBezier(points) {
+		let d = `M ${points[0].x},${points[0].y}`;
+		for (let i = 0; i < points.length - 1; i++) {
+			const p1 = points[i];
+			const p2 = points[i + 1];
+			const dx = (p2.x - p1.x) / 3;
+			const dy = (p2.y - p1.y) / 12;
+			d += ` C ${p1.x + dx},${p1.y + dy}
+					 ${p2.x - dx},${p2.y - dy}
+					 ${p2.x},${p2.y}`;
+		}
+		return d;
+	}
 
-    const xLabels = axisMonths.map((m, idx) => {
-      const month = m.date.getMonth() + 1;
-      const year = m.date.getFullYear();
-      const showYear = idx === 0 || month === 1;
-      const label = showYear ? `${year}-${month}` : `${month}`;
+	// ---------------- Point size scaling ----------------
+	// Visual weight reflects number of reviews in that month
+	function pointRadius(count) {
+		if (count <= 3)	return 6;
+		if (count <= 10)	return 8;
+		if (count <= 20)	return 10;
+		return 12;
+	}
 
-      return `
-        <text x="${scaleX(m.i)}"
-              y="${height - 40}"
-              font-size="26"
-              text-anchor="middle">
-          ${label}
-        </text>
-      `;
-    }).join("");
+	// ---------------- Render ----------------
+	function render(timeline) {
+		const width = 760, height = 340;
+		const padL = 50, padR = 40, padT = 20, padB = 110;
+		const chartW = width - padL - padR;
+		const chartH = height - padT - padB;
 
-	// Data points
-    const pts = timeline.filter(m => m.real).map(m => ({
-      x: scaleX(m.i),
-      y: scaleY(m.avg),
-      idx: m.i
-    }));
+		const INNER_X_OFFSET = 16;
+		const scaleX = i =>
+			padL + INNER_X_OFFSET + (i / 11) * (chartW - INNER_X_OFFSET);
 
-	// Split into solid vs dashed segments
-    const segments = [];
-    let current = null;
+		const scaleY = v =>
+			height - padB - ((Math.min(5, Math.max(0, v)) - 1) / 4) * chartH;
 
-    for (let i = 0; i < pts.length - 1; i++) {
-      const a = pts[i], b = pts[i + 1];
-      const solid = b.idx === a.idx + 1;
+		// Horizontal grid lines + labels
+		const yGrid = [1, 2, 3, 4, 5].map(v => {
+			const y = scaleY(v);
+			return `
+				<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#e5e7eb"/>
+				<text x="${padL - 10}" y="${y + 8}" font-size="28" text-anchor="end">${v}</text>
+			`;
+		}).join("");
 
-      if (!current || current.solid !== solid) {
-        if (current) segments.push(current);
-        current = { solid, pts: [a, b] };
-      } else {
-        current.pts.push(b);
-      }
-    }
-    if (current) segments.push(current);
+		// X-axis month labels
+		const axisMonths = [];
+		let d = new Date(startMonth);
+		for (let i = 0; i < 12; i++) {
+			axisMonths.push({ i, date: new Date(d) });
+			d.setMonth(d.getMonth() + 1);
+		}
 
-    const paths = segments.map(seg => `
-      <path d="${safeBezier(seg.pts)}"
-            fill="none"
-            stroke="#2563eb"
-            stroke-width="4"
-            ${seg.solid ? "" : 'stroke-dasharray="6 6" opacity="0.7"'} />
-    `).join("");
+		const xLabels = axisMonths.map((m, idx) => {
+			const month = m.date.getMonth() + 1;
+			const year = m.date.getFullYear();
+			const showYear = idx === 0 || month === 1;
+			const label = showYear ? `${year}-${month}` : `${month}`;
 
-	// Render dots with size based on review count
-    const dots = timeline.filter(m => m.real).map(m => `
-      <circle
-        cx="${scaleX(m.i)}"
-        cy="${scaleY(m.avg)}"
-        r="${Math.max(pointRadius(m.count), 12)}"
-        fill="transparent"
-        pointer-events="all">
-		<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${t.tooltip_reviews}</title>
-      </circle>
-      <circle
-        cx="${scaleX(m.i)}"
-        cy="${scaleY(m.avg)}"
-        r="${pointRadius(m.count)}"
-        fill="#2563eb"
-        opacity="0.9"
-        pointer-events="none" />
-    `).join("");
+			return `
+				<text x="${scaleX(m.i)}"
+					  y="${height - 24}"
+					  font-size="26"
+					  text-anchor="middle">
+					${label}
+				</text>
+			`;
+		}).join("");
 
-    card.innerHTML = `
-      ${titleHTML}
-      <svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto">
-        ${yGrid}
-        ${paths}
-        ${dots}
-        ${xLabels}
-      </svg>
-      <div style="font-size:16px">${t.scale}</div>
-    `;
-  }
+		// Data points
+		const pts = timeline.filter(m => m.real).map(m => ({
+			x: scaleX(m.i),
+			y: scaleY(m.avg),
+			idx: m.i
+		}));
 
-  // ---------------- Run ----------------
-  let reviews = loadCache();
+		// Split into solid vs dashed segments
+		const segments = [];
+		let current = null;
 
-  if (!reviews) {
-    reviews = await fetchReviews();
-    saveCache(reviews);
-  }
+		for (let i = 0; i < pts.length - 1; i++) {
+			const a = pts[i], b = pts[i + 1];
+			const solid = b.idx === a.idx + 1;
 
-  if (reviews.length < 5) {
-    card.innerHTML = `${titleHTML}<div>${t.too_few_reviews}</div>`;
-    return;
-  }
+			if (!current || current.solid !== solid) {
+				if (current) segments.push(current);
+				current = { solid, pts: [a, b] };
+			} else {
+				current.pts.push(b);
+			}
+		}
+		if (current) segments.push(current);
 
-  render(buildTimeline(reviews));
+		const paths = segments.map(seg => `
+			<path d="${safeBezier(seg.pts)}"
+				  fill="none"
+				  stroke="#2563eb"
+				  stroke-width="4"
+				  ${seg.solid ? "" : 'stroke-dasharray="6 6" opacity="0.7"'} />
+		`).join("");
+
+		// Render dots with size based on review count
+		const dots = timeline.filter(m => m.real).map(m => `
+			<circle
+				cx="${scaleX(m.i)}"
+				cy="${scaleY(m.avg)}"
+				r="${Math.max(pointRadius(m.count), 12)}"
+				fill="transparent"
+				pointer-events="all">
+				<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${t.tooltip_rating}</title>
+			</circle>
+			<circle
+				cx="${scaleX(m.i)}"
+				cy="${scaleY(m.avg)}"
+				r="${pointRadius(m.count)}"
+				fill="#2563eb"
+				opacity="0.9"
+				pointer-events="none" />
+		`).join("");
+
+		card.innerHTML = `
+			${titleHTML}
+			<svg viewBox="0 0 ${width} ${height}" style="width:100%;height:auto">
+				${yGrid}
+				${paths}
+				${dots}
+				${xLabels}
+			</svg>
+			<div style="font-size:16px">${t.scale}</div>
+		`;
+	}
+
+	// ---------------- Run ----------------
+	let reviews = loadCache();
+
+	if (!reviews) {
+		reviews = await fetchReviews();
+		saveCache(reviews);
+	}
+
+	if (reviews.length < 5) {
+		card.innerHTML = `${titleHTML}<div>${t.too_few_reviews}</div>`;
+		return;
+	}
+
+	render(buildTimeline(reviews));
 
 })();
