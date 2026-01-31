@@ -46,5 +46,21 @@ window.wporgReviewsI18n = {
     "tooltip_rating": "Note moyenne",
     "tooltip_no_data": "Aucune donnée de note",
     "tooltip_y": "Axe Y = note (1–5 ⭐)"
+  },
+  "nl": {
+    "title": "Waarderingstrend",
+    "subtitle": "Laatste 12 maanden",
+    "scale": "Schaal: 1-5 sterren · maandelijks gemiddelde",
+    "view": "Bekijk waarderingstrend",
+    "hosted": "Beoordelingen worden alleen gehost op wordpress.org",
+    "loading": "Gegevens aan het laden…",
+    "no_recent_data": "Geen huidige beoordelingen",
+    "too_few_reviews": "Te weinig beoordelingen",
+    "legend": "Legenda",
+    "tooltip_dots": "Puntgrootte = Beoordeling aantal",
+    "line": "Regel",
+    "tooltip_rating": "Gemiddelde waardering",
+    "tooltip_no_data": "Geen waarderingsgegevens",
+    "tooltip_y": "Y-As = waardering (1–5 ⭐)"
   }
 }
