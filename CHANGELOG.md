@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.6] – 2026-01-31
+- Dutch translation added, thanks to Peter Smits, plus a small text change. Details matter.
+
+---
+
 ## [1.0.5] – 2026-01-30
 - Refinements, small fixes, a bit of Salt’n’Pepa.
 

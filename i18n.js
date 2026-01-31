@@ -2,7 +2,7 @@ window.wporgReviewsI18n = {
   "en": {
     "title": "Rating Trend",
     "subtitle": "last 12 months",
-    "scale": "Scale: 1–5 stars · monthly average",
+    "scale": "Scale: 1–5 ⭐ · monthly average",
     "view": "View rating trend",
     "hosted": "Reviews are hosted on wordpress.org only",
     "loading": "Loading data…",
@@ -13,12 +13,13 @@ window.wporgReviewsI18n = {
     "line": "Line",
     "tooltip_rating": "Average rating",
     "tooltip_no_data": "No rating data",
-    "tooltip_y": "Y-Axis = Rating (1–5 ⭐)"
+    "tooltip_y": "Y-Axis = Rating (1–5 ⭐)",
+    "ratings": "ratings"
   },
   "de": {
     "title": "Bewertungstrend",
     "subtitle": "letzte 12 Monate",
-    "scale": "Skala: 1–5 Sterne · Monatsdurchschnitt",
+    "scale": "Skala: 1–5 ⭐ · Monatsdurchschnitt",
     "view": "Bewertungen ansehen",
     "hosted": "Bewertungen sind nur auf wordpress.org verfügbar",
     "loading": "Daten werden geladen …",
@@ -29,12 +30,13 @@ window.wporgReviewsI18n = {
     "line": "Linie",
     "tooltip_rating": "Bewertungen (Durchschnitt)",
     "tooltip_no_data": "Keine Bewertungsdaten",
-    "tooltip_y": "Y-Achse = Bewertung (1–5 ⭐)"
+    "tooltip_y": "Y-Achse = Bewertung (1–5 ⭐)",
+    "ratings": "Bewertungen"
   },
   "fr": {
     "title": "Tendance des avis",
     "subtitle": "12 derniers mois",
-    "scale": "Échelle : 1–5 étoiles",
+    "scale": "Échelle : 1–5 ⭐",
     "view": "Voir la tendance des avis",
     "hosted": "Les avis sont hébergés uniquement sur wordpress.org",
     "loading": "Chargement des données…",
@@ -45,12 +47,13 @@ window.wporgReviewsI18n = {
     "line": "Ligne",
     "tooltip_rating": "Note moyenne",
     "tooltip_no_data": "Aucune donnée de note",
-    "tooltip_y": "Axe Y = note (1–5 ⭐)"
+    "tooltip_y": "Axe Y = note (1–5 ⭐)",
+    "ratings": "avis"
   },
   "nl": {
     "title": "Waarderingstrend",
     "subtitle": "Laatste 12 maanden",
-    "scale": "Schaal: 1-5 sterren · maandelijks gemiddelde",
+    "scale": "Schaal: 1-5 ⭐ · maandelijks gemiddelde",
     "view": "Bekijk waarderingstrend",
     "hosted": "Beoordelingen worden alleen gehost op wordpress.org",
     "loading": "Gegevens aan het laden…",
@@ -61,6 +64,7 @@ window.wporgReviewsI18n = {
     "line": "Regel",
     "tooltip_rating": "Gemiddelde waardering",
     "tooltip_no_data": "Geen waarderingsgegevens",
-    "tooltip_y": "Y-As = waardering (1–5 ⭐)"
+    "tooltip_y": "Y-As = waardering (1–5 ⭐)",
+    "ratings": "waarderingen"
   }
 }
