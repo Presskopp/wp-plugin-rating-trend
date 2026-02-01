@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6] – 2026-01-31
+- Dutch translation added, thanks to Peter Smits, plus a small text change. Details matter.
+- Coming from a localised page, you will now be redirected correctly to a page where you will see the chart, and no longer to the reviews without any chart (not even a very small one).
+- Not so logical strings are more logical now, thanks @la-geek.
+
+---
+
 ## [1.0.5] – 2026-01-30
 - Refinements, small fixes, a bit of Salt’n’Pepa.
 

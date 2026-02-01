@@ -58,6 +58,8 @@ The chart will appear on WordPress.org plugin pages below the rating stars.
 
 No external APIs. No tracking. No data leaves your browser.
 
+---
+
 ## ❓ FAQ
 
 ### ❓ Why only 12 months?

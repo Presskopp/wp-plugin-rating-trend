@@ -132,17 +132,17 @@
 
 	// ---------------- Domain guard ----------------
 	// On localised wordpress.org domains, show link instead of chart
-	const IS_WORDPRESS_ORG =
+	const IS_CANONICAL_WPORG =
 		location.hostname === "wordpress.org" &&
 		location.pathname.startsWith("/plugins/");
 
-	if (!IS_WORDPRESS_ORG) {
+	if (!IS_CANONICAL_WPORG) {
 		card.innerHTML = `
 			${titleHTML}
 			<div style="font-size:16px">
 				${t.hosted}<br>
 				<a class="external-link"
-					href="https://wordpress.org/support/plugin/${slug}/reviews/"
+					href="https://wordpress.org/plugins/${slug}/"
 					target="_blank" rel="noopener">
 					${t.view}
 				</a>
@@ -378,7 +378,7 @@
 				r="${Math.max(pointRadius(m.count), 12)}"
 				fill="transparent"
 				pointer-events="all">
-				<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${t.tooltip_rating}</title>
+				<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${t.ratings}</title>
 			</circle>
 			<circle
 				cx="${scaleX(m.i)}"
