@@ -142,7 +142,7 @@
 			<div style="font-size:16px">
 				${t.hosted}<br>
 				<a class="external-link"
-					href="https://wordpress.org/support/plugin/${slug}/reviews/"
+					href="https://wordpress.org/plugins/${slug}/"
 					target="_blank" rel="noopener">
 					${t.view}
 				</a>

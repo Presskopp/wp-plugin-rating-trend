@@ -20,7 +20,7 @@ window.wporgReviewsI18n = {
     "title": "Bewertungstrend",
     "subtitle": "letzte 12 Monate",
     "scale": "Skala: 1–5 ⭐ · Monatsdurchschnitt",
-    "view": "Bewertungen ansehen",
+    "view": "Bewertungstrend ansehen",
     "hosted": "Bewertungen sind nur auf wordpress.org verfügbar",
     "loading": "Daten werden geladen …",
     "no_recent_data": "Keine aktuellen Bewertungen",
