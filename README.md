@@ -14,7 +14,7 @@ It visualizes how plugin ratings evolve over time — something WordPress.org it
 - 🕒 Stops early once enough data is collected
 - ⚡ Performance-optimized:
 - 🎯 Partial HTML parsing (reviews only)
-- 💾 Local cache (6 hours)
+- 💾 Local cache (7 days)
 - 🌍 i18n support
 - 🧠 Smart fallback on localized WordPress sites
 - ❌ No output if reviews are outdated
