@@ -132,11 +132,11 @@
 
 	// ---------------- Domain guard ----------------
 	// On localised wordpress.org domains, show link instead of chart
-	const IS_WORDPRESS_ORG =
+	const IS_CANONICAL_WPORG =
 		location.hostname === "wordpress.org" &&
 		location.pathname.startsWith("/plugins/");
 
-	if (!IS_WORDPRESS_ORG) {
+	if (!IS_CANONICAL_WPORG) {
 		card.innerHTML = `
 			${titleHTML}
 			<div style="font-size:16px">
