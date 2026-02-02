@@ -149,6 +149,15 @@ This avoids unnecessary requests and keeps things fast.
 
 ---
 
+### ❓ What does “Not enough ratings to show a trend” mean?
+
+If a plugin has received **fewer than 5 ratings in the last 12 months**,  
+there simply isn’t enough data to identify a meaningful trend.
+
+In this case, the chart is replaced with this message instead of showing a misleading or noisy visualization.
+
+---
+
 ## ⚠️ Disclaimer
 
 This extension **scrapes publicly available data** from WordPress.org.  
