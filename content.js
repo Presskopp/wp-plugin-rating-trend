@@ -285,10 +285,11 @@
 	// ---------------- Point size scaling ----------------
 	// Visual weight reflects number of reviews in that month
 	function pointRadius(count) {
-		if (count <= 3)	return 6;
-		if (count <= 10)	return 8;
-		if (count <= 20)	return 10;
-		return 12;
+		if (count <= 3)	 return 6;
+		if (count <= 10) return 8;
+		if (count <= 20) return 10;
+		if (count <= 50) return 12;
+		return 14;
 	}
 
 	// ---------------- Render ----------------
