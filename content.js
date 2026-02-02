@@ -34,10 +34,10 @@
 				line-height: 1.3;
 			}
 
-			.rt-subtitle {
+			.rt-review-count {
+				opacity: .6;
 				font-weight: 400;
-				opacity: .7;
-				font-size: 15px;
+				font-size: 14px;
 			}
 
 			.rt-info {
@@ -84,7 +84,7 @@
 		<div class="rt-title">
 			<div class="rt-title-text">
 				📈 ${t.title}<br>
-				<span class="rt-subtitle">· ${t.subtitle}</span>
+				<span class="rt-review-count"></span>
 			</div>
 
 			<span class="rt-info" tabindex="0" aria-label="${t.legend}">
@@ -415,5 +415,13 @@
 	}
 
 	render(buildTimeline(reviews));
+
+	const reviewsCountText = t.reviews_last_12
+		.replace("{count}", reviews.length);
+
+	const countEl = card.querySelector(".rt-review-count");
+	if (countEl) {
+		countEl.textContent = reviewsCountText;
+	}
 
 })();

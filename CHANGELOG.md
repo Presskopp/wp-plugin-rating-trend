@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8] – 2026-02-02
+
+- The number of reviews per 12 months is now displayed (no more secrets between us).
+- small fixes
+
+---
+
 ## [1.0.7] – 2026-02-02
 - some small adjustments to make the extension Chrome Web Store ready
 

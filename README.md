@@ -13,8 +13,8 @@ It visualizes how plugin ratings evolve over time — something WordPress.org it
 - 🚫 No gaps: missing months are interpolated
 - 🕒 Stops early once enough data is collected
 - ⚡ Performance-optimized:
-- 🎯 Partial HTML parsing (reviews only)
-- 💾 Local cache (7 days)
+  - 🎯 Partial HTML parsing (reviews only)
+  - 💾 Local cache (7 days)
 - 🌍 i18n support
 - 🧠 Smart fallback on localized WordPress sites
 - ❌ No output if reviews are outdated
@@ -77,6 +77,25 @@ In short: **faster, more relevant, more useful.**
 
 ---
 
+### ❓ Why is no chart shown for some plugins?
+
+There are two different reasons why no chart may be displayed:
+
+**1. Too few recent ratings**  
+If a plugin has received only a very small number of ratings in the last 12 months,  
+the chart is replaced by a short message (“Not enough ratings to show a trend”).
+
+**2. No recent ratings at all**  
+If a plugin has not received *any* new ratings in over 12 months,  
+no chart is shown at all.
+
+Why?  
+A “trend” without recent data would be misleading.  
+In this case, showing nothing is better than showing a bad chart.
+
+
+---
+
 ### ❓ What does “No gaps: missing months are interpolated” mean?
 Some months simply have **no reviews** — that’s normal.
 
@@ -127,21 +146,6 @@ As soon as data for **12 distinct months** is available:
 - even if more review pages exist
 
 This avoids unnecessary requests and keeps things fast.
-
----
-
-### ❓ What does “No output if reviews are outdated” mean?
-If a plugin:
-- has **not received any new reviews in over a year**
-
-then:
-- no chart is shown
-
-Why?  
-👉 A “trend” without recent data would be misleading.
-
-In this case, **no chart is better than a bad one**.
-
 
 ---
 
