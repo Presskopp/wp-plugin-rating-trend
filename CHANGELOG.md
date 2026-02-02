@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.0.7] – 2026-02-02
+- some small adjustments to make the extension Chrome Web Store ready
+
+---
+
 ## [1.0.6] – 2026-01-31
 - Dutch translation added, thanks to Peter Smits, plus a small text change. Details matter.
 - Coming from a localised page, you will now be redirected correctly to a page where you will see the chart, and no longer to the reviews without any chart (not even a very small one).

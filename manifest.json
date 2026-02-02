@@ -1,11 +1,12 @@
 {
   "manifest_version": 3,
   "name": "WP Rating Trend",
-  "version": "1.0.6",
-  "description": "Show rating trend for WordPress plugins",
+  "version": "1.0.7",
+  "description": "Shows a 12-month rating trend chart on WordPress.org plugin pages",
   "content_scripts": [
     {
       "matches": [
+        "https://wordpress.org/plugins/*",
         "https://*.wordpress.org/plugins/*"
       ],
       "js": [
