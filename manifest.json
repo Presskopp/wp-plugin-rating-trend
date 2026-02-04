@@ -6,7 +6,6 @@
   "content_scripts": [
     {
       "matches": [
-        "https://wordpress.org/plugins/*",
         "https://*.wordpress.org/plugins/*"
       ],
       "js": [
