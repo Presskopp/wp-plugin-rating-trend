@@ -34,10 +34,10 @@
 				line-height: 1.3;
 			}
 
-			.rt-subtitle {
+			.rt-review-count {
+				opacity: .6;
 				font-weight: 400;
-				opacity: .7;
-				font-size: 15px;
+				font-size: 14px;
 			}
 
 			.rt-info {
@@ -75,6 +75,48 @@
 				transition: all .15s ease;
 				z-index: 20;
 			}
+
+			/* -------- Loading -------- */
+
+			.rt-loading {
+				font-size: 16px;
+				opacity: .7;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			.rt-loading-dots span {
+				display: inline-block;
+				width: 4px;
+				height: 4px;
+				margin-left: 2px;
+				background: currentColor;
+				border-radius: 50%;
+				animation: rt-dot-bounce 1.4s ease-in-out infinite;
+			}
+
+			.rt-loading-dots span:nth-child(1) { animation-delay: 0s; }
+			.rt-loading-dots span:nth-child(2) { animation-delay: .15s; }
+			.rt-loading-dots span:nth-child(3) { animation-delay: .3s; }
+
+			@keyframes rt-dot-bounce {
+				0%, 80%, 100% {
+					transform: translateY(0);
+					opacity: 0.4;
+				}
+				40% {
+					transform: translateY(-6px);
+					opacity: 1;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.rt-loading-dots span {
+					animation: none;
+					opacity: .6;
+				}
+			}
 		`;
 		document.head.appendChild(style);
 	}
@@ -84,7 +126,7 @@
 		<div class="rt-title">
 			<div class="rt-title-text">
 				📈 ${t.title}<br>
-				<span class="rt-subtitle">· ${t.subtitle}</span>
+				<span class="rt-review-count"></span>
 			</div>
 
 			<span class="rt-info" tabindex="0" aria-label="${t.legend}">
@@ -95,6 +137,15 @@
 					– – ${t.line} = ${t.tooltip_no_data}<br>
 					${t.tooltip_y}
 				</span>
+			</span>
+		</div>
+	`;
+
+	const loadingHTML = `
+		<div class="rt-loading">
+			<span class="rt-loading-text">${t.loading}</span>
+			<span class="rt-loading-dots" aria-hidden="true">
+				<span></span><span></span><span></span>
 			</span>
 		</div>
 	`;
@@ -111,7 +162,7 @@
 		max-width:760px;
 	`;
 	ratingsBlock.parentNode.insertBefore(card, ratingsBlock.nextSibling);
-	card.innerHTML = `${titleHTML}<div style="opacity:.6">${t.loading}</div>`;
+	card.innerHTML = `${titleHTML}${loadingHTML}`;
 
 	// ---------------- Time window ----------------
 	// Rolling 12-month window ending at the current month
@@ -285,10 +336,11 @@
 	// ---------------- Point size scaling ----------------
 	// Visual weight reflects number of reviews in that month
 	function pointRadius(count) {
-		if (count <= 3)	return 6;
-		if (count <= 10)	return 8;
-		if (count <= 20)	return 10;
-		return 12;
+		if (count <= 3)	 return 6;
+		if (count <= 10) return 8;
+		if (count <= 20) return 10;
+		if (count <= 50) return 12;
+		return 14;
 	}
 
 	// ---------------- Render ----------------
@@ -415,5 +467,13 @@
 	}
 
 	render(buildTimeline(reviews));
+
+	const reviewsCountText = t.reviews_last_12
+		.replace("{count}", reviews.length);
+
+	const countEl = card.querySelector(".rt-review-count");
+	if (countEl) {
+		countEl.textContent = reviewsCountText;
+	}
 
 })();
