@@ -75,6 +75,48 @@
 				transition: all .15s ease;
 				z-index: 20;
 			}
+
+			/* -------- Loading -------- */
+
+			.rt-loading {
+				font-size: 16px;
+				opacity: .7;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			.rt-loading-dots span {
+				display: inline-block;
+				width: 4px;
+				height: 4px;
+				margin-left: 2px;
+				background: currentColor;
+				border-radius: 50%;
+				animation: rt-dot-bounce 1.4s ease-in-out infinite;
+			}
+
+			.rt-loading-dots span:nth-child(1) { animation-delay: 0s; }
+			.rt-loading-dots span:nth-child(2) { animation-delay: .15s; }
+			.rt-loading-dots span:nth-child(3) { animation-delay: .3s; }
+
+			@keyframes rt-dot-bounce {
+				0%, 80%, 100% {
+					transform: translateY(0);
+					opacity: 0.4;
+				}
+				40% {
+					transform: translateY(-6px);
+					opacity: 1;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.rt-loading-dots span {
+					animation: none;
+					opacity: .6;
+				}
+			}
 		`;
 		document.head.appendChild(style);
 	}
@@ -99,6 +141,15 @@
 		</div>
 	`;
 
+	const loadingHTML = `
+		<div class="rt-loading">
+			<span class="rt-loading-text">${t.loading}</span>
+			<span class="rt-loading-dots" aria-hidden="true">
+				<span></span><span></span><span></span>
+			</span>
+		</div>
+	`;
+
 	// ---------------- Card ----------------
 	const card = document.createElement("div");
 	card.style.cssText = `
@@ -111,7 +162,7 @@
 		max-width:760px;
 	`;
 	ratingsBlock.parentNode.insertBefore(card, ratingsBlock.nextSibling);
-	card.innerHTML = `${titleHTML}<div style="opacity:.6">${t.loading}</div>`;
+	card.innerHTML = `${titleHTML}${loadingHTML}`;
 
 	// ---------------- Time window ----------------
 	// Rolling 12-month window ending at the current month
