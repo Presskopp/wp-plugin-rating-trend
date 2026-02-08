@@ -1,4 +1,4 @@
-# WP Plugin Rating Trend
+# WordPress Plugin Rating Trends
 
 A lightweight Chrome extension that adds a **rating trend chart (last 12 months)** to WordPress.org plugin pages.
 

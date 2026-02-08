@@ -469,7 +469,7 @@
 			<div class="rt-footer">
 				&copy; <span id="rt-year"></span>
 				<a href="https://presskopp.com/" class="rt-footer-link">Presskopp</a> •
-				<a href="https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk" class="rt-footer-link">WordPress Plugin Rating Trend</a>
+				<a href="https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk" class="rt-footer-link">WordPress Plugin Rating Trends</a>
 			</div>
 		`;
 	}

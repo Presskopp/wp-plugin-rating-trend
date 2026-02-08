@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] – 2026-02-05
+
+- Hello Firefox 🦊
+
+---
+
 ## [1.1.0] – 2026-02-05
 
 - The extension, formerly known as 'WP Rating Trend', has been renamed to 'WordPress Plugin Rating Trends'. If Prince can do it, so can I.
