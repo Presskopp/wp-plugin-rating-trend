@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0] – 2026-02-05
+
+- The extension, formerly known as 'WP Rating Trend', has been renamed to 'WordPress Plugin Rating Trends'. If Prince can do it, so can I.
+- Footer credits added.
+
+---
+
 ## [1.0.9] – 2026-02-04
 
 - \***NEW**\* Now with 100% more loading animation  

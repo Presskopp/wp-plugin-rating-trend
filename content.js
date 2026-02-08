@@ -76,6 +76,22 @@
 				z-index: 20;
 			}
 
+			.rt-footer {
+				font-size: 10px;
+				margin-top: 10px;
+			}
+
+			.rt-footer-link {
+				text-decoration: none;
+				color: inherit;
+				border-bottom: 1px dotted transparent;
+			}
+
+			.rt-footer-link:hover {
+				border-bottom-color: currentColor;
+			}
+
+
 			/* -------- Loading -------- */
 
 			.rt-loading {
@@ -154,7 +170,7 @@
 	const card = document.createElement("div");
 	card.style.cssText = `
 		margin:16px 0 0;
-		padding:18px;
+		padding:18px 18px 3px 18px;
 		border:1px solid #e5e7eb;
 		border-radius:14px;
 		background:#fff;
@@ -450,6 +466,11 @@
 				${xLabels}
 			</svg>
 			<div style="font-size:16px">${t.scale}</div>
+			<div class="rt-footer">
+				&copy; <span id="rt-year"></span>
+				<a href="https://presskopp.com/" class="rt-footer-link">Presskopp</a> •
+				<a href="https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk" class="rt-footer-link">WordPress Plugin Rating Trend</a>
+			</div>
 		`;
 	}
 
@@ -475,5 +496,8 @@
 	if (countEl) {
 		countEl.textContent = reviewsCountText;
 	}
+
+	const year = new Date().getFullYear();
+	document.getElementById("rt-year").textContent = year;
 
 })();
