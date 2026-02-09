@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2] – 2026-02-05
+
+- Arabic translation added, thanks @FakhriAz
+- small changes (don't ask, it's boring)
+
+---
+
 ## [1.1.1] – 2026-02-05
 
 - Hello Firefox 🦊

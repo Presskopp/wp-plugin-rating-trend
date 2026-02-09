@@ -66,5 +66,22 @@ window.wporgReviewsI18n = {
     "tooltip_no_data": "Geen waarderingsgegevens",
     "tooltip_y": "Y-As = waardering (1–5 ⭐)",
     "ratings": "waarderingen"
+  },
+  "ar": {
+    "title": "اتجاه التقييمات",
+    "reviews_last_12": "بناءً على {count} مراجعة في آخر 12 شهرًا",
+    "scale": "المقياس: 1–5  · المتوسط الشهري",
+    "view": "عرض اتجاه التقييمات",
+    "hosted": "المراجعات مستضافة على wordpress.org فقط",
+    "loading": "جاري تحميل البيانات",
+    "no_recent_data": "لا توجد مراجعات حالية",
+    "too_few_reviews": "لا توجد تقييمات كافية لإظهار الاتجاه",
+    "legend": "مفتاح الرسم",
+    "tooltip_dots": "حجم النقطة = عدد المراجعات النسبي",
+    "line": "الخط",
+    "tooltip_rating": "متوسط التقييم",
+    "tooltip_no_data": "لا توجد بيانات تقييم",
+    "tooltip_y": "محور Y = التقييم (1–5 )",
+    "ratings": "تقييمات"
   }
 }
