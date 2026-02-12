@@ -248,8 +248,9 @@
 	// ---------------- Fetch reviews ----------------
 	// Scrapes paginated support forum review listings
 	async function fetchReviews() {
+
 		const reviews = [];
-		let page = 1;
+		let page = 4;
 
 		// English month names used in wp.org date titles
 		const monthsMap = {
@@ -258,26 +259,44 @@
 			September: "09", October: "10", November: "11", December: "12"
 		};
 
-		while (page <= 10) {
+		const MAX_PAGES = 10;
+		const controller = new AbortController();
+		const { signal } = controller;
+
+		// Abort when navigating away
+		window.addEventListener("beforeunload", () => {
+			controller.abort();
+		});
+
+		async function fetchPage(page) {
 			const url = page === 1
 				? `https://wordpress.org/support/plugin/${slug}/reviews/`
 				: `https://wordpress.org/support/plugin/${slug}/reviews/page/${page}/`;
 
-			const res = await fetch(url);
-			const html = await res.text();
+			const res = await fetch(url, { signal });
+
+			if (!res.ok) {
+				return null;
+			}
+
+			return res.text();
+		}
+
+		function processHTML(html) {
+			if (!html) return false;
+
 			const doc = new DOMParser().parseFromString(html, "text/html");
 			const topics = [...doc.querySelectorAll('ul[id^="bbp-topic-"]')];
+			if (!topics.length) return false;
 
-			// Used to detect when we've paged past the relevant date range
 			let foundRelevant = false;
 
 			for (const topic of topics) {
-				const stars = topic.querySelectorAll(".dashicons-star-filled").length;
+				const stars = topic.getElementsByClassName("dashicons-star-filled").length;
 				const title =
 					topic.querySelector(".bbp-topic-freshness a")?.getAttribute("title");
 				if (!stars || !title) continue;
 
-				// Extract "Month Day, Year" from title attribute
 				const m = title.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
 				if (!m) continue;
 
@@ -290,9 +309,58 @@
 				}
 			}
 
-			// Stop once we no longer encounter relevant months
-			if (!foundRelevant) break;
-			page++;
+			return foundRelevant;
+		}
+
+		let stop = false;
+
+		try {
+			// ---------------- Phase 1: First 3 parallel ----------------
+			// --- Step 1: Page 1 alone ---
+			const html1 = await fetchPage(1);
+			const found1 = processHTML(html1);
+
+			if (!found1) {
+				stop = true;
+			} else {
+
+				// --- Step 2: Only if page 1 had relevant data ---
+				const nextPages = [2, 3].filter(p => p <= MAX_PAGES);
+				const nextBatch = await Promise.all(
+					nextPages.map(p => fetchPage(p))
+				);
+
+				for (let i = 0; i < nextBatch.length; i++) {
+					const found = processHTML(nextBatch[i]);
+					if (!found) {
+						stop = true;
+						break;
+					}
+				}
+			}
+
+			// ---------------- Phase 2: Continue in 2er batches ----------------
+			while (!stop && page <= MAX_PAGES) {
+				const batchPages = [page, page + 1].filter(p => p <= MAX_PAGES);
+				const htmlPages = await Promise.all(
+					batchPages.map(p => fetchPage(p))
+				);
+
+				for (let i = 0; i < htmlPages.length; i++) {
+					const found = processHTML(htmlPages[i]);
+					if (!found) {
+						stop = true;
+						break;
+					}
+				}
+
+				page += 2;
+			}
+		} catch (err) {
+			if (err.name === "AbortError") {
+			} else {
+				console.error("[RT] Fetch error:", err);
+			}
 		}
 
 		return reviews;

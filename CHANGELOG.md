@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.3] – 2026-02-05
+
+- Speed! (parallel fetching). Like when another checkout suddenly opens at the supermarket.
+
+---
+
 ## [1.1.2] – 2026-02-05
 
 - Arabic translation added, thanks @FakhriAz
