@@ -249,6 +249,7 @@
 	// Scrapes paginated support forum review listings
 	async function fetchReviews() {
 
+		let completed = true;
 		const reviews = [];
 		let page = 4;
 
@@ -339,7 +340,7 @@
 				}
 			}
 
-			// ---------------- Phase 2: Continue in 2er batches ----------------
+			// ---------------- Phase 2: Continue fetching in batches of 2 pages ----------------
 			while (!stop && page <= MAX_PAGES) {
 				const batchPages = [page, page + 1].filter(p => p <= MAX_PAGES);
 				const htmlPages = await Promise.all(
@@ -357,12 +358,14 @@
 				page += 2;
 			}
 		} catch (err) {
-			if (err.name === "AbortError") {
-			} else {
+			completed = false;
+
+			if (err.name !== "AbortError") {
 				console.error("[RT] Fetch error:", err);
 			}
 		}
 
+		if (!completed) return null;
 		return reviews;
 	}
 
@@ -545,8 +548,11 @@
 	// ---------------- Run ----------------
 	let reviews = loadCache();
 
-	if (!reviews) {
-		reviews = await fetchReviews();
+	reviews = await fetchReviews();
+
+	if (reviews === null) {
+		reviews = [];
+	} else {
 		saveCache(reviews);
 	}
 

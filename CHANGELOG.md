@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.4] – 2026-02-05
+
+- Living on the edge? A rare edge case has been fixed where leaving the page while retrieving data and returning to it would display an incorrect result.
+
+---
+
 ## [1.1.3] – 2026-02-05
 
 - Speed! (parallel fetching). Like when another checkout suddenly opens at the supermarket.
