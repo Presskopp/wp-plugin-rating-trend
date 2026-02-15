@@ -3,6 +3,8 @@
 ## [1.1.4] – 2026-02-05
 
 - Living on the edge? A rare edge case has been fixed where leaving the page while retrieving data and returning to it would display an incorrect result.
+- Gave the X-axis and year labels a gentle nudge so they finally behave like civilized UI elements.
+- Under-the-hood codebase cleanup — cleaner internals, same performance.
 
 ---
 

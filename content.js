@@ -1,8 +1,18 @@
-(async function () {
+(async function() {
 
 	// ---------------- Guards ----------------
-	if (!location.pathname.startsWith("/plugins/")) return;
-	const slug = location.pathname.split("/")[2];
+	const IS_WPORG =
+		(location.hostname === "wordpress.org" ||
+		location.hostname.endsWith(".wordpress.org")) &&
+		location.pathname.startsWith("/plugins/");
+
+	if (!IS_WPORG) return;
+
+	const IS_CANONICAL =
+		location.hostname === "wordpress.org";
+
+	const parts = location.pathname.split("/").filter(Boolean);
+	const slug = parts[1];
 	if (!slug) return;
 
 	const ratingsBlock = document.querySelector(".wp-block-wporg-ratings-stars");
@@ -11,7 +21,7 @@
 	// ---------------- i18n ----------------
 	const i18n = window.wporgReviewsI18n || {};
 	const browserLang =
-		(navigator.language || navigator.userLanguage || "en")
+		(navigator.language || "en")
 			.toLowerCase()
 			.split("-")[0];
 	const t = i18n[browserLang] || i18n.en;
@@ -180,6 +190,22 @@
 	ratingsBlock.parentNode.insertBefore(card, ratingsBlock.nextSibling);
 	card.innerHTML = `${titleHTML}${loadingHTML}`;
 
+	// ---------------- Domain fallback ----------------
+	if (!IS_CANONICAL) {
+		card.innerHTML = `
+			${titleHTML}
+			<div style="font-size:16px">
+				${t.hosted}<br>
+				<a class="external-link"
+					href="https://wordpress.org/plugins/${slug}/"
+					target="_blank" rel="noopener">
+					${t.view}
+				</a>
+			</div>
+		`;
+		return;
+	}
+
 	// ---------------- Time window ----------------
 	// Rolling 12-month window ending at the current month
 	const now = new Date();
@@ -196,27 +222,6 @@
 		const [y, m] = k.split("-").map(Number);
 		return new Date(y, m - 1, 1);
 	};
-
-	// ---------------- Domain guard ----------------
-	// On localised wordpress.org domains, show link instead of chart
-	const IS_CANONICAL_WPORG =
-		location.hostname === "wordpress.org" &&
-		location.pathname.startsWith("/plugins/");
-
-	if (!IS_CANONICAL_WPORG) {
-		card.innerHTML = `
-			${titleHTML}
-			<div style="font-size:16px">
-				${t.hosted}<br>
-				<a class="external-link"
-					href="https://wordpress.org/plugins/${slug}/"
-					target="_blank" rel="noopener">
-					${t.view}
-				</a>
-			</div>
-		`;
-		return;
-	}
 
 	// ---------------- Cache ----------------
 	// LocalStorage cache to avoid repeated scraping
@@ -255,9 +260,18 @@
 
 		// English month names used in wp.org date titles
 		const monthsMap = {
-			January: "01", February: "02", March: "03", April: "04",
-			May: "05", June: "06", July: "07", August: "08",
-			September: "09", October: "10", November: "11", December: "12"
+			January: "01",
+			February: "02",
+			March: "03",
+			April: "04",
+			May: "05",
+			June: "06",
+			July: "07",
+			August: "08",
+			September: "09",
+			October: "10",
+			November: "11",
+			December: "12"
 		};
 
 		const MAX_PAGES = 10;
@@ -270,9 +284,9 @@
 		});
 
 		async function fetchPage(page) {
-			const url = page === 1
-				? `https://wordpress.org/support/plugin/${slug}/reviews/`
-				: `https://wordpress.org/support/plugin/${slug}/reviews/page/${page}/`;
+			const url = page === 1 ?
+				`https://wordpress.org/support/plugin/${slug}/reviews/` :
+				`https://wordpress.org/support/plugin/${slug}/reviews/page/${page}/`;
 
 			const res = await fetch(url, { signal });
 
@@ -283,7 +297,7 @@
 			return res.text();
 		}
 
-		function processHTML(html) {
+		function processHTML(html) {	// returns true if relevant reviews found
 			if (!html) return false;
 
 			const doc = new DOMParser().parseFromString(html, "text/html");
@@ -305,7 +319,10 @@
 				const date = monthKeyToDate(key);
 
 				if (date >= startMonth && date <= endMonth) {
-					reviews.push({ stars, month: key });
+					reviews.push({
+						stars,
+						month: key
+					});
 					foundRelevant = true;
 				}
 			}
@@ -316,7 +333,7 @@
 		let stop = false;
 
 		try {
-			// ---------------- Phase 1: First 3 parallel ----------------
+			// ---------------- Phase 1: Page 1, then pages 2+3 in parallel ----------------
 			// --- Step 1: Page 1 alone ---
 			const html1 = await fetchPage(1);
 			const found1 = processHTML(html1);
@@ -387,14 +404,18 @@
 			if (byMonth[key]) {
 				const arr = byMonth[key];
 				timeline.push({
-					i,													// month index (0–11)
-					avg: arr.reduce((a, b) => a + b, 0) / arr.length,	// average rating
-					count: arr.length,									// review count
+					i, 													// month index (0–11)
+					avg: arr.reduce((a, b) => a + b, 0) / arr.length, 	// average rating
+					count: arr.length, 									// review count
 					real: true
 				});
 				if (firstReal === null) firstReal = i;
 			} else {
-				timeline.push({ i, avg: null, real: false });
+				timeline.push({
+					i,
+					avg: null,
+					real: false
+				});
 			}
 
 			d.setMonth(d.getMonth() + 1);
@@ -423,7 +444,7 @@
 	// ---------------- Point size scaling ----------------
 	// Visual weight reflects number of reviews in that month
 	function pointRadius(count) {
-		if (count <= 3)	 return 6;
+		if (count <= 3)  return 6;
 		if (count <= 10) return 8;
 		if (count <= 20) return 10;
 		if (count <= 50) return 12;
@@ -432,11 +453,15 @@
 
 	// ---------------- Render ----------------
 	function render(timeline) {
-		const width = 760, height = 340;
-		const padL = 50, padR = 40, padT = 20, padB = 110;
+		const width = 760,
+			height = 340;
+		const padL = 50,
+			padR = 40,
+			padT = 20,
+			padB = 110;
 		const chartW = width - padL - padR;
 		const chartH = height - padT - padB;
-
+		const chartBottom = height - padB;
 		const INNER_X_OFFSET = 16;
 		const scaleX = i =>
 			padL + INNER_X_OFFSET + (i / 11) * (chartW - INNER_X_OFFSET);
@@ -456,6 +481,7 @@
 		// X-axis month labels
 		const axisMonths = [];
 		let d = new Date(startMonth);
+
 		for (let i = 0; i < 12; i++) {
 			axisMonths.push({ i, date: new Date(d) });
 			d.setMonth(d.getMonth() + 1);
@@ -464,17 +490,38 @@
 		const xLabels = axisMonths.map((m, idx) => {
 			const month = m.date.getMonth() + 1;
 			const year = m.date.getFullYear();
-			const showYear = idx === 0 || month === 1;
-			const label = showYear ? `${year}-${month}` : `${month}`;
+			const x = scaleX(m.i);
 
-			return `
-				<text x="${scaleX(m.i)}"
-					  y="${height - 24}"
-					  font-size="26"
-					  text-anchor="middle">
-					${label}
+			// Month label
+			let monthLabel = `
+				<text x="${x}"
+					y="${chartBottom + 50}"
+					font-size="27"
+					text-anchor="middle"
+					fill="#111827">
+					${month}
 				</text>
 			`;
+
+			// Year label BELOW months
+			let yearLabel = "";
+
+			if (idx === 0 || month === 1) {
+				yearLabel = `
+				<text x="${x}"
+					y="${chartBottom + 80}"
+					font-size="22"
+					font-weight="600"
+					fill="#9CA3AF"
+					text-anchor="middle"
+					letter-spacing="0.5">
+					${year}
+				</text>
+				`;
+			}
+
+			return monthLabel + yearLabel;
+
 		}).join("");
 
 		// Data points
@@ -494,7 +541,10 @@
 
 			if (!current || current.solid !== solid) {
 				if (current) segments.push(current);
-				current = { solid, pts: [a, b] };
+				current = {
+					solid,
+					pts: [a, b]
+				};
 			} else {
 				current.pts.push(b);
 			}
@@ -548,12 +598,14 @@
 	// ---------------- Run ----------------
 	let reviews = loadCache();
 
-	reviews = await fetchReviews();
+	if (!reviews) {
+		reviews = await fetchReviews();
 
-	if (reviews === null) {
-		reviews = [];
-	} else {
-		saveCache(reviews);
+		if (reviews !== null) {
+			saveCache(reviews);
+		} else {
+			reviews = [];
+		}
 	}
 
 	if (reviews.length < 5) {
