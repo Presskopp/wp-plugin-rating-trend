@@ -1,12 +1,23 @@
 {
   "manifest_version": 3,
-  "name": "WP Rating Trend",
-  "version": "1.0.9",
+  "name": "WordPress Plugin Rating Trends",
+  "version": "1.1.4",
   "description": "Shows a 12-month rating trend chart on WordPress.org plugin pages",
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wp-plugin-rating-trends@presskopp.com",
+      "strict_min_version": "142.0",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
+    }
+  },
+
   "content_scripts": [
     {
       "matches": [
-        "https://wordpress.org/plugins/*",
         "https://*.wordpress.org/plugins/*"
       ],
       "js": [
@@ -15,6 +26,7 @@
       ]
     }
   ],
+
   "icons": {
     "16": "icon-16.png",
     "32": "icon-32.png",

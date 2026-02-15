@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.1.4] – 2026-02-05
+
+- Living on the edge? A rare edge case has been fixed where leaving the page while retrieving data and returning to it would display an incorrect result.
+- Gave the X-axis and year labels a gentle nudge so they finally behave like civilized UI elements.
+- Under-the-hood codebase cleanup — cleaner internals, same performance.
+
+---
+
+## [1.1.3] – 2026-02-05
+
+- Speed! (parallel fetching). Like when another checkout suddenly opens at the supermarket.
+
+---
+
+## [1.1.2] – 2026-02-05
+
+- Arabic translation added, thanks @FakhriAz
+- small changes (don't ask, it's boring)
+
+---
+
+## [1.1.1] – 2026-02-05
+
+- Hello Firefox 🦊
+
+---
+
+## [1.1.0] – 2026-02-05
+
+- The extension, formerly known as 'WP Rating Trend', has been renamed to 'WordPress Plugin Rating Trends'. If Prince can do it, so can I.
+- Footer credits added.
+
+---
+
 ## [1.0.9] – 2026-02-04
 
 - \***NEW**\* Now with 100% more loading animation  

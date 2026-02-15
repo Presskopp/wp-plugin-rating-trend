@@ -34,20 +34,20 @@ window.wporgReviewsI18n = {
     "ratings": "Bewertungen"
   },
   "fr": {
-    "title": "Tendance des avis",
+    "title": "Tendance des évaluations",
     "reviews_last_12": "basé sur {count} avis au cours des 12 derniers mois",
-    "scale": "Échelle : 1–5 ⭐",
+    "scale": "Échelle : 1–5 ⭐ · moyenne mensuelle",
     "view": "Voir la tendance des avis",
-    "hosted": "Les avis sont hébergés uniquement sur wordpress.org",
+    "hosted": "Les avis sont hébergés sur wordpress.org uniquement",
     "loading": "Chargement des données",
     "no_recent_data": "Aucun avis récent",
-    "too_few_reviews": "Trop peu d’avis",
-    "legend": "Légende du graphique",
-    "tooltip_dots": "Taille des points = nombre relatif d'avis",
+    "too_few_reviews": "Trop peu d'avis",
+    "legend": "Légende",
+    "tooltip_dots": "Taille du point = Nombre relatif d'avis",
     "line": "Ligne",
     "tooltip_rating": "Note moyenne",
-    "tooltip_no_data": "Aucune donnée de note",
-    "tooltip_y": "Axe Y = note (1–5 ⭐)",
+    "tooltip_no_data": "Aucune donnée d'évaluation",
+    "tooltip_y": "Axe Y = Évaluation (1–5 ⭐)",
     "ratings": "avis"
   },
   "nl": {
@@ -66,5 +66,22 @@ window.wporgReviewsI18n = {
     "tooltip_no_data": "Geen waarderingsgegevens",
     "tooltip_y": "Y-As = waardering (1–5 ⭐)",
     "ratings": "waarderingen"
+  },
+  "ar": {
+    "title": "اتجاه التقييمات",
+    "reviews_last_12": "بناءً على {count} مراجعة في آخر 12 شهرًا",
+    "scale": "المقياس: 1–5  · المتوسط الشهري",
+    "view": "عرض اتجاه التقييمات",
+    "hosted": "المراجعات مستضافة على wordpress.org فقط",
+    "loading": "جاري تحميل البيانات",
+    "no_recent_data": "لا توجد مراجعات حالية",
+    "too_few_reviews": "لا توجد تقييمات كافية لإظهار الاتجاه",
+    "legend": "مفتاح الرسم",
+    "tooltip_dots": "حجم النقطة = عدد المراجعات النسبي",
+    "line": "الخط",
+    "tooltip_rating": "متوسط التقييم",
+    "tooltip_no_data": "لا توجد بيانات تقييم",
+    "tooltip_y": "محور Y = التقييم (1–5 )",
+    "ratings": "تقييمات"
   }
 }
