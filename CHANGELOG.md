@@ -1,6 +1,13 @@
 # Changelog
 
-## [1.1.4] – 2026-02-05
+## [1.1.5] – 2026-02-16
+
+- Internal cleanup and stability polishing. Nice and tidy.
+- Tightened a few small screws, or rather tiny, almost imperceptible ones.
+
+---
+
+## [1.1.4] – 2026-02-15
 
 - Living on the edge? A rare edge case has been fixed where leaving the page while retrieving data and returning to it would display an incorrect result.
 - Gave the X-axis and year labels a gentle nudge so they finally behave like civilized UI elements.
@@ -8,13 +15,13 @@
 
 ---
 
-## [1.1.3] – 2026-02-05
+## [1.1.3] – 2026-02-12
 
 - Speed! (parallel fetching). Like when another checkout suddenly opens at the supermarket.
 
 ---
 
-## [1.1.2] – 2026-02-05
+## [1.1.2] – 2026-02-09
 
 - Arabic translation added, thanks @FakhriAz
 - small changes (don't ask, it's boring)

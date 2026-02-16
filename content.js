@@ -88,7 +88,7 @@
 
 			.rt-footer {
 				font-size: 10px;
-				margin-top: 10px;
+				margin-top: 5px;
 			}
 
 			.rt-footer-link {
@@ -143,6 +143,11 @@
 					opacity: .6;
 				}
 			}
+
+			.rt-content {
+				font-size: 16px;
+				margin-bottom: 10px;
+			}
 		`;
 		document.head.appendChild(style);
 	}
@@ -194,7 +199,7 @@
 	if (!IS_CANONICAL) {
 		card.innerHTML = `
 			${titleHTML}
-			<div style="font-size:16px">
+			<div class="rt-content">
 				${t.hosted}<br>
 				<a class="external-link"
 					href="https://wordpress.org/plugins/${slug}/"
@@ -231,10 +236,14 @@
 	function loadCache() {
 		try {
 			const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
-			if (cached && Date.now() - cached.time < CACHE_TTL) {
-				return cached.data;
+			if (cached?.time && Array.isArray(cached?.data)) {
+				if (Date.now() - cached.time < CACHE_TTL) {
+					return cached.data;
+				}
 			}
-		} catch {}
+		} catch (err) {
+			console.warn("[RT] Cache load error:", err);
+		}
 		return null;
 	}
 
@@ -258,30 +267,26 @@
 		const reviews = [];
 		let page = 4;
 
-		// English month names used in wp.org date titles
-		const monthsMap = {
-			January: "01",
-			February: "02",
-			March: "03",
-			April: "04",
-			May: "05",
-			June: "06",
-			July: "07",
-			August: "08",
-			September: "09",
-			October: "10",
-			November: "11",
-			December: "12"
-		};
+		// Month name to number mapping for wp.org date parsing
+		const monthsMap = new Map([
+			["January", "01"], ["February", "02"], ["March", "03"],
+			["April", "04"], ["May", "05"], ["June", "06"],
+			["July", "07"], ["August", "08"], ["September", "09"],
+			["October", "10"], ["November", "11"], ["December", "12"]
+		]);
 
 		const MAX_PAGES = 10;
 		const controller = new AbortController();
 		const { signal } = controller;
 
 		// Abort when navigating away
-		window.addEventListener("beforeunload", () => {
-			controller.abort();
-		});
+		const abortListener = () => controller.abort();
+		window.addEventListener("beforeunload", abortListener);
+
+		// Cleanup listener to prevent memory leaks
+		const cleanup = () => {
+			window.removeEventListener("beforeunload", abortListener);
+		};
 
 		async function fetchPage(page) {
 			const url = page === 1 ?
@@ -315,7 +320,10 @@
 				const m = title.match(/^([A-Za-z]+) (\d{1,2}), (\d{4})/);
 				if (!m) continue;
 
-				const key = `${m[3]}-${monthsMap[m[1]]}`;
+				const monthNum = monthsMap.get(m[1]);
+				if (!monthNum) continue;
+
+				const key = `${m[3]}-${monthNum}`;
 				const date = monthKeyToDate(key);
 
 				if (date >= startMonth && date <= endMonth) {
@@ -380,6 +388,8 @@
 			if (err.name !== "AbortError") {
 				console.error("[RT] Fetch error:", err);
 			}
+		} finally {
+			cleanup();
 		}
 
 		if (!completed) return null;
@@ -590,7 +600,7 @@
 			<div class="rt-footer">
 				&copy; <span id="rt-year"></span>
 				<a href="https://presskopp.com/" class="rt-footer-link">Presskopp</a> •
-				<a href="https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk" class="rt-footer-link">WordPress Plugin Rating Trends</a>
+				<a href="https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk" class="rt-footer-link">WordPress Plugin Rating Trends v1.1.5</a>
 			</div>
 		`;
 	}
@@ -609,7 +619,7 @@
 	}
 
 	if (reviews.length < 5) {
-		card.innerHTML = `${titleHTML}<div>${t.too_few_reviews}</div>`;
+		card.innerHTML = `${titleHTML}<div class="rt-content">${t.too_few_reviews}</div>`;
 		return;
 	}
 
@@ -624,6 +634,9 @@
 	}
 
 	const year = new Date().getFullYear();
-	document.getElementById("rt-year").textContent = year;
+	const yearEl = document.getElementById("rt-year");
+	if (yearEl) {
+		yearEl.textContent = year;
+	}
 
 })();
