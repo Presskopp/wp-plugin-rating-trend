@@ -1,5 +1,7 @@
 (async function() {
 
+	const VERSION = "1.1.6";
+
 	// ---------------- Guards ----------------
 	const IS_WPORG =
 		(location.hostname === "wordpress.org" ||
@@ -17,6 +19,9 @@
 
 	const ratingsBlock = document.querySelector(".wp-block-wporg-ratings-stars");
 	if (!ratingsBlock) return;
+
+	// ------------ browser check ------------
+	const isFirefox = navigator.userAgent.includes("Firefox");
 
 	// ---------------- i18n ----------------
 	const i18n = window.wporgReviewsI18n || {};
@@ -181,6 +186,16 @@
 		</div>
 	`;
 
+	const storeUrl = isFirefox
+		? "https://addons.mozilla.org/firefox/addon/wordpress-plugin-rating-trends/"
+		: "https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk";
+
+	const storeLink = `
+		<a href="${storeUrl}" class="rt-footer-link">
+			WordPress Plugin Rating Trends v${VERSION}
+		</a>
+	`;
+
 	// ---------------- Card ----------------
 	const card = document.createElement("div");
 	card.style.cssText = `
@@ -256,7 +271,9 @@
 					data
 				})
 			);
-		} catch {}
+		} catch (err) {
+			console.warn("[RT] Cache could not be saved:", err);
+		}
 	}
 
 	// ---------------- Fetch reviews ----------------
@@ -600,7 +617,7 @@
 			<div class="rt-footer">
 				&copy; <span id="rt-year"></span>
 				<a href="https://presskopp.com/" class="rt-footer-link">Presskopp</a> •
-				<a href="https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk" class="rt-footer-link">WordPress Plugin Rating Trends v1.1.5</a>
+				${storeLink}
 			</div>
 		`;
 	}

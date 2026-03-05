@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "WordPress Plugin Rating Trends",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Shows a 12-month rating trend chart on WordPress.org plugin pages",
 
   "browser_specific_settings": {

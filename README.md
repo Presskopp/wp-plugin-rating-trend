@@ -1,6 +1,6 @@
 # WordPress Plugin Rating Trends
 
-A lightweight Chrome extension that adds a **rating trend chart (last 12 months)** to WordPress.org plugin pages.
+A lightweight Browser extension (for Chrome and Firefox) that adds a **rating trend chart (last 12 months)** to WordPress.org plugin pages.
 
 It visualizes how plugin ratings evolve over time — something WordPress.org itself does not show.
 
@@ -42,6 +42,14 @@ It visualizes how plugin ratings evolve over time — something WordPress.org it
 3. Enable **Developer mode**
 4. Click **Load unpacked**
 5. Select this project folder
+
+## 🔧 Installation (Firefox)
+
+1. Clone or download this repository
+2. Open Firefox and go to `about:debugging`
+3. Click **This Firefox**
+4. Click **Load Temporary Add-on…**
+5. Select the **manifest.json** file from this project folder
 
 Done 🎉  
 The chart will appear on WordPress.org plugin pages below the rating stars.

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.6] – 2026-03-05
+
+- Render unto Firefox what is Firefox’s (Firefox users will get https://addons.mozilla.org
+ instead of the Chrome Web Store in the credits.)
+- A little bit of this, a little bit of that
+
+---
+
 ## [1.1.5] – 2026-02-16
 
 - Internal cleanup and stability polishing. Nice and tidy.
