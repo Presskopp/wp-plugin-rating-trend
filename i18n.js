@@ -14,6 +14,7 @@ window.wporgReviewsI18n = {
     "tooltip_rating": "Average rating",
     "tooltip_no_data": "No rating data",
     "tooltip_y": "Y-Axis = Rating (1–5 ⭐)",
+    "rating": "rating",
     "ratings": "ratings"
   },
   "de": {
@@ -31,6 +32,7 @@ window.wporgReviewsI18n = {
     "tooltip_rating": "Bewertungen (Durchschnitt)",
     "tooltip_no_data": "Keine Bewertungsdaten",
     "tooltip_y": "Y-Achse = Bewertung (1–5 ⭐)",
+    "rating": "Bewertung",
     "ratings": "Bewertungen"
   },
   "fr": {
@@ -43,11 +45,12 @@ window.wporgReviewsI18n = {
     "no_recent_data": "Aucun avis récent",
     "too_few_reviews": "Trop peu d'avis",
     "legend": "Légende",
-    "tooltip_dots": "Taille du point = Nombre relatif d'avis",
+    "tooltip_dots": "Taille du point = nombre relatif d'avis",
     "line": "Ligne",
     "tooltip_rating": "Note moyenne",
     "tooltip_no_data": "Aucune donnée d'évaluation",
     "tooltip_y": "Axe Y = Évaluation (1–5 ⭐)",
+    "rating": "avis",
     "ratings": "avis"
   },
   "nl": {
@@ -61,16 +64,17 @@ window.wporgReviewsI18n = {
     "too_few_reviews": "Te weinig beoordelingen",
     "legend": "Legenda",
     "tooltip_dots": "Puntgrootte = relatief aantal beoordelingen",
-    "line": "Regel",
+    "line": "Lijn",
     "tooltip_rating": "Gemiddelde waardering",
     "tooltip_no_data": "Geen waarderingsgegevens",
     "tooltip_y": "Y-As = waardering (1–5 ⭐)",
+    "rating": "waardering",
     "ratings": "waarderingen"
   },
   "ar": {
     "title": "اتجاه التقييمات",
     "reviews_last_12": "بناءً على {count} مراجعة في آخر 12 شهرًا",
-    "scale": "المقياس: 1–5  · المتوسط الشهري",
+    "scale": "المقياس: 1–5 ⭐ · المتوسط الشهري",
     "view": "عرض اتجاه التقييمات",
     "hosted": "المراجعات مستضافة على wordpress.org فقط",
     "loading": "جاري تحميل البيانات",
@@ -81,7 +85,8 @@ window.wporgReviewsI18n = {
     "line": "الخط",
     "tooltip_rating": "متوسط التقييم",
     "tooltip_no_data": "لا توجد بيانات تقييم",
-    "tooltip_y": "محور Y = التقييم (1–5 )",
+    "tooltip_y": "محور Y = التقييم (1–5 ⭐)",
+    "rating": "تقييم",
     "ratings": "تقييمات"
   }
 }

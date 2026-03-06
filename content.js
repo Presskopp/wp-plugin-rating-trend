@@ -594,7 +594,7 @@
 				r="${Math.max(pointRadius(m.count), 12)}"
 				fill="transparent"
 				pointer-events="all">
-				<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${t.ratings}</title>
+				<title>&#8960; ${m.avg.toFixed(2)} | ${m.count} ${m.count === 1 ? t.rating : t.ratings}</title>
 			</circle>
 			<circle
 				cx="${scaleX(m.i)}"
