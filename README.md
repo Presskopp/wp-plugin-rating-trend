@@ -37,6 +37,14 @@ It visualizes how plugin ratings evolve over time — something WordPress.org it
 
 ## 🔧 Installation (Chrome)
 
+### Install via Chrome Web Store
+
+Install the extension directly from the Chrome Web Store:
+
+👉 https://chromewebstore.google.com/detail/wp-rating-trend/gmkeigdmjfiefaaicjmihodhfnjclifk
+
+### Manual Installation
+
 1. Clone or download this repository
 2. Open Chrome and go to `chrome://extensions`
 3. Enable **Developer mode**
@@ -44,6 +52,14 @@ It visualizes how plugin ratings evolve over time — something WordPress.org it
 5. Select this project folder
 
 ## 🔧 Installation (Firefox)
+
+### Install via Firefox Add-ons (AMO)
+
+Install the extension from Mozilla Add-ons:
+
+👉 https://addons.mozilla.org/de/firefox/addon/wordpress-plugin-rating-trends/
+
+### Manual Installation
 
 1. Clone or download this repository
 2. Open Firefox and go to `about:debugging`
